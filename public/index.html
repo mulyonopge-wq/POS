@@ -1064,9 +1064,9 @@
                   </div>
 
                   <div class="pt-1">
-                    <button type="button" onclick="testSendWhatsAppFromSettings()" class="w-full sm:w-auto px-4 py-2.5 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-600 hover:text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-xs">
+                    <a id="btn-test-wa-demo" href="https://wa.me/6281234567890" target="_blank" onclick="testSendWhatsAppFromSettings(event)" class="w-full sm:w-auto px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-xl text-xs font-bold transition inline-flex items-center justify-center gap-1.5 shadow-md no-underline">
                       <i class="fa-solid fa-paper-plane"></i> <span>Tes Kirim Struk Demo ke WhatsApp Saya</span>
-                    </button>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -7632,7 +7632,7 @@
       alert("URL Webhook WhatsApp berhasil disalin:\n" + url);
     }
 
-    function testSendWhatsAppFromSettings() {
+    function testSendWhatsAppFromSettings(e) {
       const dummySale = {
         invoice_no: 'INV-DEMO-001',
         sale_date: new Date().toISOString(),
@@ -7659,17 +7659,12 @@
       const messageText = formatWhatsAppReceiptText(dummySale);
       const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(messageText)}`;
 
-      if (typeof playBeep === 'function') playBeep('success');
-
-      // Buka di tab baru, jika diblokir popup blocker oleh browser -> alihkan lokasi window utama
-      try {
-        const win = window.open(waUrl, '_blank');
-        if (!win || win.closed || typeof win.closed === 'undefined') {
-          window.location.href = waUrl;
-        }
-      } catch (e) {
-        window.location.href = waUrl;
+      const btn = document.getElementById('btn-test-wa-demo');
+      if (btn) {
+        btn.href = waUrl;
       }
+
+      if (typeof playBeep === 'function') playBeep('success');
     }
 
     // ==========================================
