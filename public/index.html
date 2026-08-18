@@ -3610,7 +3610,9 @@
         const json = await res.json();
 
         if (json.success) {
-          closeModal('modal-confirm-update');
+          if (document.getElementById('modal-confirm-update')) {
+            closeModal('modal-confirm-update');
+          }
           playBeep('success');
           alert(json.message || "Pembaruan berhasil diterapkan! Halaman akan dimuat ulang dengan versi baru.");
           setTimeout(() => {
@@ -8061,7 +8063,10 @@
     }
 
     function closeModal(id) {
-      document.getElementById(id).classList.add('hidden');
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.add('hidden');
+      }
     }
 
     function toggleDarkMode() {
