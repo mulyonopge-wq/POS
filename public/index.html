@@ -7632,24 +7632,72 @@
       alert("URL Webhook WhatsApp berhasil disalin:\n" + url);
     }
 
-    function testSendWhatsAppFromSettings() {
+    async function testSendWhatsAppFromSettings() {
       const dummySale = {
         invoice_no: 'INV-DEMO-001',
         sale_date: new Date().toISOString(),
-        cashier_name: (currentUser && currentUser.name) ? currentUser.name : 'Admin',
+        cashier_name: (currentUser && currentUser.name) ? currentUser.name : 'Administrator Toko',
         customer_name: 'Pelanggan Demo',
-        total_amount: 50000,
+        total_amount: 45000,
         discount_amount: 0,
         payment_type: 'CASH',
         payment_status: 'PAID',
         cash_amount: 50000,
-        change_amount: 0,
+        change_amount: 5000,
         items: [
           { product_name: 'Indomie Goreng 85g', unit_name: 'Pcs', qty: 2, price_used: 3500, subtotal: 7000 },
           { product_name: 'Minyak Goreng Bimoli 2L', unit_name: 'Pcs', qty: 1, price_used: 38000, subtotal: 38000 }
         ]
       };
-      openSendWhatsAppReceiptModal(dummySale);
+
+      let defaultPhone = (storeSettings && storeSettings.store_phone) ? storeSettings.store_phone : '';
+      let rawPhone = prompt("Masukkan nomor WhatsApp Anda untuk pengujian struk demo:", defaultPhone || "081234567890");
+      if (!rawPhone) return;
+
+      let cleanPhone = rawPhone.trim().replace(/\D/g, '');
+      if (cleanPhone.startsWith('0')) cleanPhone = '62' + cleanPhone.slice(1);
+      else if (!cleanPhone.startsWith('62')) cleanPhone = '62' + cleanPhone;
+
+      if (cleanPhone.length < 9) {
+        alert("Nomor WhatsApp tidak valid. Masukkan nomor HP yang benar (contoh: 081234567890).");
+        return;
+      }
+
+      const messageText = formatWhatsAppReceiptText(dummySale);
+      const gatewayType = storeSettings?.wa_gateway_type || 'direct';
+
+      if (gatewayType === 'direct') {
+        const targetUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(messageText)}`;
+        window.open(targetUrl, '_blank');
+        if (typeof playBeep === 'function') playBeep('success');
+      } else {
+        const win = window.open('about:blank', '_blank');
+        try {
+          const res = await fetchAPI('/api/whatsapp/send', {
+            method: 'POST',
+            body: JSON.stringify({
+              phone: cleanPhone,
+              message: messageText
+            })
+          });
+          const json = await res.json();
+          if (json.success && json.method === 'api' && !json.direct_url) {
+            if (win) win.close();
+            if (typeof playBeep === 'function') playBeep('success');
+            alert(json.message || `Struk demo berhasil dikirim via WhatsApp Gateway ke ${cleanPhone}!`);
+          } else {
+            const targetUrl = json.direct_url || `https://wa.me/${cleanPhone}?text=${encodeURIComponent(messageText)}`;
+            if (win) win.location.href = targetUrl;
+            else window.open(targetUrl, '_blank');
+            if (typeof playBeep === 'function') playBeep('success');
+          }
+        } catch (e) {
+          const fallbackUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(messageText)}`;
+          if (win) win.location.href = fallbackUrl;
+          else window.open(fallbackUrl, '_blank');
+          if (typeof playBeep === 'function') playBeep('success');
+        }
+      }
     }
 
     // ==========================================
