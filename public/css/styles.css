@@ -27,9 +27,9 @@
 }
 
 .dark .glass-panel {
-  background: rgba(17, 24, 39, 0.85);
+  background: rgba(24, 24, 27, 0.85);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(55, 65, 81, 0.5);
+  border: 1px solid rgba(63, 63, 70, 0.5);
 }
 
 /* Sembunyikan container cetak di tampilan layar normal */
