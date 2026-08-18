@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pos-kasir-v1.0';
+const CACHE_NAME = 'pos-kasir-v1.1';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -42,13 +42,31 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch Event - Dynamic caching with Network-First for API and Stale-While-Revalidate for UI
+// Fetch Event - Dynamic caching with Network-First for API and HTML, and Stale-While-Revalidate for static assets
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip non-GET requests (mutations like POST, PUT, DELETE shouldn't be cached directly)
+  // Skip non-GET requests
   if (request.method !== 'GET') {
+    return;
+  }
+
+  // Handle Navigation / HTML requests (Network First to ensure latest UI)
+  if (request.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname === '/') {
+    event.respondWith(
+      fetch(request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, responseToCache);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(request).then(res => res || caches.match('/')))
+    );
     return;
   }
 
@@ -57,7 +75,6 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          // If successful response, clone and update API cache
           if (response && response.status === 200) {
             const responseToCache = response.clone();
             caches.open(CACHE_NAME).then((cache) => {
@@ -67,10 +84,8 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(async () => {
-          // Offline fallback for API
           const cachedResponse = await caches.match(request);
           if (cachedResponse) {
-            console.log('[SW] Serving cached API response offline for:', url.pathname);
             return cachedResponse;
           }
           return new Response(JSON.stringify({ 
@@ -85,7 +100,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Handle Static Assets & App Shell (Stale-While-Revalidate / Cache First with fallback)
+  // Handle Static Assets (Stale-While-Revalidate)
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       const fetchPromise = fetch(request).then((networkResponse) => {
@@ -96,12 +111,7 @@ self.addEventListener('fetch', (event) => {
           });
         }
         return networkResponse;
-      }).catch(() => {
-        // If network fails and no cached response, fallback to root /
-        if (request.mode === 'navigate') {
-          return caches.match('/');
-        }
-      });
+      }).catch(() => {});
 
       return cachedResponse || fetchPromise;
     })
