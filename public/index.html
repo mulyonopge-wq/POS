@@ -7485,6 +7485,9 @@
         const cust = customers.find(c => c.id == saleData.customer_id);
         if (cust && cust.phone) targetPhone = cust.phone;
       }
+      if (!targetPhone && typeof storeSettings !== 'undefined' && storeSettings?.store_phone) {
+        targetPhone = storeSettings.store_phone;
+      }
 
       if (phoneInput) {
         let clean = targetPhone.replace(/\D/g, '');
@@ -7533,6 +7536,18 @@
       else if (!cleanPhone.startsWith('62')) cleanPhone = '62' + cleanPhone;
 
       const messageText = formatWhatsAppReceiptText(currentWhatsAppSaleData);
+      const gatewayType = storeSettings?.wa_gateway_type || 'direct';
+
+      // Jika direct wa.me, langsung buka URL secara sychronous tanpa terblokir Popup Blocker
+      if (gatewayType === 'direct') {
+        const targetUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(messageText)}`;
+        window.open(targetUrl, '_blank');
+        closeModal('modal-send-wa-receipt');
+        return;
+      }
+
+      // Jika gateway API, buka window pre-pass agar tidak terblokir jika fallback ke wa.me
+      const win = window.open('about:blank', '_blank');
 
       try {
         const res = await fetchAPI('/api/whatsapp/send', {
@@ -7545,16 +7560,19 @@
         });
 
         const json = await res.json();
-        if (json.success && json.direct_url) {
-          window.open(json.direct_url, '_blank');
+        if (json.success && json.method === 'api' && !json.direct_url) {
+          if (win) win.close();
+          alert(json.message || "Struk berhasil dikirim via WhatsApp Gateway!");
         } else {
-          const fallbackUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(messageText)}`;
-          window.open(fallbackUrl, '_blank');
+          const targetUrl = json.direct_url || `https://wa.me/${cleanPhone}?text=${encodeURIComponent(messageText)}`;
+          if (win) win.location.href = targetUrl;
+          else window.open(targetUrl, '_blank');
         }
         closeModal('modal-send-wa-receipt');
       } catch (err) {
         const fallbackUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(messageText)}`;
-        window.open(fallbackUrl, '_blank');
+        if (win) win.location.href = fallbackUrl;
+        else window.open(fallbackUrl, '_blank');
         closeModal('modal-send-wa-receipt');
       }
     }
