@@ -171,7 +171,7 @@
           <i class="fa-solid fa-address-book text-lg w-5"></i>
           <span>Kontak & Relasi</span>
         </button>
-        <button onclick="openPrinterSettingsModal()" id="nav-printer-settings" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-400 hover:bg-zinc-800 hover:text-white transition-all duration-200">
+        <button onclick="switchTab('printer')" id="nav-printer" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-400 hover:bg-zinc-800 hover:text-white transition-all duration-200">
           <i class="fa-solid fa-print text-lg w-5 text-indigo-400"></i>
           <span>Pengaturan Printer</span>
         </button>
@@ -228,7 +228,7 @@
 
         <div class="flex items-center gap-1.5 md:gap-3 ml-auto">
           <!-- Quick Printer Settings Button -->
-          <button type="button" onclick="openPrinterSettingsModal()" class="px-2.5 py-1.5 bg-indigo-50 dark:bg-zinc-900/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/80 rounded-xl flex items-center gap-1.5 text-xs font-bold shadow-xs transition-transform active:scale-95" title="Pengaturan Printer">
+          <button type="button" onclick="switchTab('printer')" class="px-2.5 py-1.5 bg-indigo-50 dark:bg-zinc-900/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/80 rounded-xl flex items-center gap-1.5 text-xs font-bold shadow-xs transition-transform active:scale-95" title="Pengaturan Printer">
             <i class="fa-solid fa-print text-sm"></i>
             <span class="hidden sm:inline">Printer</span>
           </button>
@@ -1219,6 +1219,100 @@
           </div>
         </section>
 
+
+        <!-- TAB PRINTER: PENGATURAN PRINTER THERMAL (Halaman Khusus / Non-Popup) -->
+        <section id="tab-printer" class="tab-content hidden space-y-6 max-w-5xl mx-auto">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-200 dark:border-zinc-800 pb-4">
+            <div>
+              <h2 class="text-2xl font-bold font-outfit flex items-center gap-2">
+                <i class="fa-solid fa-print text-indigo-500"></i> Pengaturan Printer Thermal & Struk Kasir
+              </h2>
+              <p class="text-xs text-slate-400 mt-0.5">Konfigurasi printer thermal Bluetooth / USB / RawBT, ukuran kertas struk, dan pilihan metode cetak otomatis kasir.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Kartu 1: Status Printer Bluetooth -->
+            <div class="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm space-y-4">
+              <div class="border-b border-slate-100 dark:border-zinc-800 pb-3">
+                <h3 class="text-base font-bold font-outfit flex items-center gap-2 text-indigo-500">
+                  <i class="fa-brands fa-bluetooth-b text-indigo-500"></i> Status Printer Bluetooth
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Hubungkan HP, Tablet, atau Laptop kasir secara nirkabel via Bluetooth tanpa kabel.</p>
+              </div>
+
+              <div class="p-4 bg-slate-50 dark:bg-zinc-800/60 rounded-xl border border-slate-200 dark:border-zinc-700 space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="font-semibold text-xs text-slate-700 dark:text-slate-300">Status Koneksi:</span>
+                  <span id="modal-bt-printer-status" class="px-2.5 py-1 rounded-lg font-bold bg-slate-200 dark:bg-zinc-700 text-slate-600 dark:text-slate-300 text-xs">Belum Terhubung</span>
+                </div>
+                <div class="pt-1 flex flex-wrap gap-2">
+                  <button type="button" onclick="testBluetoothPrinter()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white py-2.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-transform">
+                    <i class="fa-solid fa-plug"></i> <span>Sambungkan & Tes Cetak</span>
+                  </button>
+                  <button type="button" onclick="disconnectBluetoothPrinter()" class="bg-slate-200 dark:bg-zinc-800 hover:bg-slate-300 dark:hover:bg-zinc-700 text-slate-700 dark:text-slate-300 px-3 py-2.5 rounded-xl font-medium text-xs flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-link-slash"></i> <span>Putus</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Kartu 2: Pilihan Ukuran Kertas Struk -->
+            <div class="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm space-y-4">
+              <div class="border-b border-slate-100 dark:border-zinc-800 pb-3">
+                <h3 class="text-base font-bold font-outfit flex items-center gap-2 text-emerald-500">
+                  <i class="fa-solid fa-ruler-horizontal"></i> Ukuran Kertas Struk
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Pilih format lebar kertas printer thermal yang terpasang di toko Anda.</p>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <label class="flex items-center gap-3 p-3.5 border border-slate-200 dark:border-zinc-700 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-zinc-800 transition">
+                  <input type="radio" name="paper-size-radio" value="58" onchange="setPaperSizeFromModal(this.value)" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <div>
+                    <span class="font-bold block text-slate-800 dark:text-slate-100 text-sm">Thermal 58mm</span>
+                    <span class="text-[11px] text-slate-400">Printer HP / Mini Bluetooth Portabel</span>
+                  </div>
+                </label>
+                <label class="flex items-center gap-3 p-3.5 border border-slate-200 dark:border-zinc-700 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-zinc-800 transition">
+                  <input type="radio" name="paper-size-radio" value="80" onchange="setPaperSizeFromModal(this.value)" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <div>
+                    <span class="font-bold block text-slate-800 dark:text-slate-100 text-sm">Thermal 80mm</span>
+                    <span class="text-[11px] text-slate-400">Printer Kasir Desktop / USB / LAN</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kartu 3: Metode Cetak Default Kasir -->
+          <div class="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm space-y-4">
+            <div class="border-b border-slate-100 dark:border-zinc-800 pb-3">
+              <h3 class="text-base font-bold font-outfit flex items-center gap-2 text-violet-500">
+                <i class="fa-solid fa-sliders"></i> Metode Cetak Default Kasir
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">Atur jalur pengiriman data ke printer saat kasir menekan tombol cetak struk.</p>
+            </div>
+
+            <div class="space-y-3 max-w-xl text-xs">
+              <select id="modal-print-mode-select" onchange="savePrintModePreference(this.value)" class="w-full px-3.5 py-2.5 border border-slate-300 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-800 text-slate-800 dark:text-slate-100 font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <option value="rawbt">🚀 Aplikasi RawBT Android (Sangat Rapi & Pas Ukuran Nota)</option>
+                <option value="bluetooth">🔵 Direct Web Bluetooth (Tanpa Aplikasi Tambahan)</option>
+                <option value="browser">🖥️ Dialog Browser (Standar Komputer / PC Desktop)</option>
+              </select>
+              <div class="p-3.5 bg-amber-50 dark:bg-amber-950/40 rounded-xl border border-amber-200 dark:border-amber-900/60 text-amber-800 dark:text-amber-300 space-y-1.5">
+                <p class="font-bold flex items-center gap-1.5 text-xs"><i class="fa-solid fa-lightbulb text-amber-500"></i> Panduan Pemilihan Metode Cetak:</p>
+                <ul class="list-disc list-inside text-xs space-y-1 text-amber-700 dark:text-amber-400">
+                  <li><b>Aplikasi RawBT Android:</b> Sangat disarankan untuk HP/Tablet Android agar struk otomatis terpotong pas tanpa menyisa kertas panjang.</li>
+                  <li><b>Direct Web Bluetooth:</b> Untuk mencetak langsung via koneksi Web Bluetooth browser tanpa perlu menginstall aplikasi pihak ketiga.</li>
+                  <li><b>Dialog Browser:</b> Cocok jika menggunakan Komputer/PC Desktop Windows dengan printer thermal yang terhubung kabel USB.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
         <!-- TAB 7: MANAJEMEN USER (ADMIN ONLY) -->
         <section id="tab-users" class="tab-content hidden space-y-6">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -1277,7 +1371,7 @@
         </button>
 
         <!-- 4. Pengaturan Printer -->
-        <button type="button" onclick="openPrinterSettingsModal()" id="bnav-printer" class="mobile-bnav-btn flex-1 py-1 flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-medium transition-all">
+        <button type="button" onclick="switchTab('printer')" id="bnav-printer" class="mobile-bnav-btn flex-1 py-1 flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-medium transition-all">
           <i class="fa-solid fa-print text-lg text-indigo-400"></i>
           <span class="text-[10px] tracking-tight">Printer</span>
         </button>
@@ -1498,79 +1592,7 @@
     </div>
   </div>
 
-  <!-- Modal Pengaturan Printer & Bluetooth (Kasir & Admin) -->
-  <div id="modal-printer-settings" class="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50 hidden">
-    <div class="bg-white dark:bg-zinc-900 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-      <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-zinc-800">
-        <h3 class="font-outfit font-bold text-lg flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
-          <i class="fa-solid fa-print"></i> Pengaturan Printer Thermal
-        </h3>
-        <button onclick="closeModal('modal-printer-settings')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
-      </div>
-
-      <div class="space-y-4 text-xs">
-        <!-- Status Koneksi Bluetooth -->
-        <div class="p-3.5 bg-slate-50 dark:bg-zinc-800/60 rounded-xl border border-slate-200 dark:border-zinc-700 space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-              <i class="fa-brands fa-bluetooth-b text-indigo-500 text-sm"></i> Printer Bluetooth:
-            </span>
-            <span id="modal-bt-printer-status" class="px-2 py-0.5 rounded-md font-bold bg-slate-200 dark:bg-zinc-700 text-slate-600 dark:text-slate-300 text-[11px]">Belum Terhubung</span>
-          </div>
-          <p class="text-[11px] text-slate-400">Hubungkan HP/Tablet langsung ke printer thermal portabel 58mm/80mm.</p>
-
-          <div class="pt-2 flex flex-wrap gap-2">
-            <button type="button" onclick="testBluetoothPrinter()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white py-2 px-3 rounded-xl font-bold flex items-center justify-center gap-1.5 shadow-sm transition-transform">
-              <i class="fa-solid fa-plug"></i> <span>Sambungkan & Tes Cetak</span>
-            </button>
-            <button type="button" onclick="disconnectBluetoothPrinter()" class="bg-slate-200 dark:bg-zinc-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 py-2 px-3 rounded-xl font-medium flex items-center justify-center gap-1 transition">
-              <i class="fa-solid fa-link-slash"></i> <span>Putus</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Pilihan Ukuran Kertas -->
-        <div>
-          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Ukuran Kertas Struk:</label>
-          <div class="grid grid-cols-2 gap-2">
-            <label class="flex items-center gap-2 p-2.5 border border-slate-200 dark:border-zinc-700 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-zinc-800">
-              <input type="radio" name="paper-size-radio" value="58" onchange="setPaperSizeFromModal(this.value)" class="text-indigo-600 focus:ring-indigo-500">
-              <div>
-                <span class="font-bold block text-slate-800 dark:text-slate-100">Thermal 58mm</span>
-                <span class="text-[10px] text-slate-400">Printer HP / Mini Bluetooth</span>
-              </div>
-            </label>
-            <label class="flex items-center gap-2 p-2.5 border border-slate-200 dark:border-zinc-700 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-zinc-800">
-              <input type="radio" name="paper-size-radio" value="80" onchange="setPaperSizeFromModal(this.value)" class="text-indigo-600 focus:ring-indigo-500">
-              <div>
-                <span class="font-bold block text-slate-800 dark:text-slate-100">Thermal 80mm</span>
-                <span class="text-[10px] text-slate-400">Printer Kasir Standar / USB</span>
-              </div>
-            </label>
-          </div>
-        </div>
-
-        <!-- Pilihan Mode Cetak Kasir -->
-        <div>
-          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Metode Cetak Default Kasir:</label>
-          <select id="modal-print-mode-select" onchange="savePrintModePreference(this.value)" class="w-full px-3 py-2 border rounded-xl bg-white dark:bg-zinc-800 text-slate-800 dark:text-slate-100 text-xs font-medium">
-            <option value="rawbt">🚀 Aplikasi RawBT Android (Sangat Rapi & Pas Ukuran Nota)</option>
-            <option value="bluetooth">🔵 Direct Web Bluetooth (Tanpa Aplikasi Tambahan)</option>
-            <option value="browser">🖥️ Dialog Browser (Standar Komputer / PC)</option>
-          </select>
-          <p class="text-[11px] text-slate-400 mt-1">
-            <i class="fa-solid fa-circle-info text-amber-500"></i> Jika di HP hasil cetak terlalu panjang (A4), pilih <b>Aplikasi RawBT</b> untuk hasil cetak pas sesuai panjang struk.
-          </p>
-        </div>
-      </div>
-
-      <div class="pt-3 border-t border-slate-100 dark:border-zinc-800 flex justify-end">
-        <button type="button" onclick="closeModal('modal-printer-settings')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl font-bold text-xs">
-          SELESAI
-        </button>
-      </div>
-    </div>
-  </div>
+  
 
   <!-- Modal Edit Profil Mandiri -->
   <div id="modal-edit-profile" class="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50 hidden">
@@ -3930,6 +3952,9 @@
         toggleMobileSidebar();
       }
 
+      if (tabName === 'printer') {
+        loadPrinterSettingsUI();
+      }
       if (tabName === 'kasir') {
         fetchCategories();
         fetchProducts();
@@ -5333,8 +5358,7 @@
 
     // Modal Printer Settings UI Functions
     function openPrinterSettingsModal() {
-      loadPrinterSettingsUI();
-      document.getElementById('modal-printer-settings').classList.remove('hidden');
+      switchTab('printer');
     }
 
     function loadPrinterSettingsUI() {
