@@ -1,0 +1,244 @@
+/* ==========================================================================
+   CSS CUSTOM UNTUK THERMAL PRINTING, BARCODE LABELS & DESIGN POS
+   ========================================================================== */
+
+/* Kelas Pembantu Umum */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5);
+  border-radius: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.8);
+}
+
+/* Penyesuaian Glassmorphism & Animasi Hover */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+.dark .glass-panel {
+  background: rgba(17, 24, 39, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(55, 65, 81, 0.5);
+}
+
+/* Sembunyikan container cetak di tampilan layar normal */
+@media screen {
+  #thermal-receipt,
+  #barcode-print-area {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   LOGIKA CETAK THERMAL & BARCODE ( window.print() )
+   ========================================================================== */
+@media print {
+  /* Reset html & body agar tidak terpotong overflow-hidden */
+  html, body {
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-family: 'Inter', -apple-system, sans-serif !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Sembunyikan SEMUA elemen screen UI dengan display: none */
+  #login-screen,
+  #main-app,
+  #sidebar-overlay,
+  #mobile-cart-drawer,
+  #barcode-live-results,
+  .modal-overlay,
+  div[id^="modal-"],
+  header,
+  nav,
+  aside,
+  button,
+  .no-print {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* ===================================================
+     1. CETAK STRUK THERMAL (KASIR)
+     =================================================== */
+  body:not(.printing-barcode) #thermal-receipt {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    margin: 0 auto !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-family: 'Courier New', Courier, monospace, monospace !important;
+    box-shadow: none !important;
+    border: none !important;
+    page-break-inside: avoid !important;
+  }
+
+  body:not(.printing-barcode) #thermal-receipt * {
+    visibility: visible !important;
+    color: #000000 !important;
+    background: transparent !important;
+  }
+
+  body:not(.printing-barcode) #barcode-print-area {
+    display: none !important;
+  }
+
+  /* Ukuran Kertas Thermal 58mm (Lebar cetak efektif 48mm / 384 dots) */
+  .receipt-width-58 {
+    width: 48mm !important;
+    max-width: 48mm !important;
+    padding: 1mm !important;
+    font-size: 11px !important;
+    line-height: 1.25 !important;
+    margin: 0 auto !important;
+  }
+
+  /* Ukuran Kertas Thermal 80mm (Lebar cetak efektif 72mm / 576 dots) */
+  .receipt-width-80 {
+    width: 72mm !important;
+    max-width: 72mm !important;
+    padding: 2mm !important;
+    font-size: 12.5px !important;
+    line-height: 1.35 !important;
+    margin: 0 auto !important;
+  }
+
+  /* ===================================================
+     2. CETAK LABEL BARCODE PRODUK (PRINTER BARCODE)
+     =================================================== */
+  body.printing-barcode #thermal-receipt {
+    display: none !important;
+  }
+
+  body.printing-barcode #barcode-print-area {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  body.printing-barcode #barcode-print-area * {
+    visibility: visible !important;
+    color: #000000 !important;
+  }
+
+  /* Label Stiker 40x30 mm (1 Kolom Single Roll) */
+  .label-container-40x30 {
+    width: 40mm !important;
+    height: 30mm !important;
+    page-break-after: always !important;
+    page-break-inside: avoid !important;
+    margin: 0 auto !important;
+    padding: 1.5mm 1mm !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    text-align: center !important;
+    overflow: hidden !important;
+    background: #ffffff !important;
+  }
+
+  /* Label Stiker 50x30 mm (1 Kolom Single Roll) */
+  .label-container-50x30 {
+    width: 50mm !important;
+    height: 30mm !important;
+    page-break-after: always !important;
+    page-break-inside: avoid !important;
+    margin: 0 auto !important;
+    padding: 1.5mm 1.5mm !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    text-align: center !important;
+    overflow: hidden !important;
+    background: #ffffff !important;
+  }
+
+  /* Label Stiker 33x15 mm (3 Kolom Mini Barcode) */
+  .label-container-33x15 {
+    width: 33mm !important;
+    height: 15mm !important;
+    page-break-inside: avoid !important;
+    margin: 0.5mm !important;
+    padding: 0.5mm !important;
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    text-align: center !important;
+    overflow: hidden !important;
+    vertical-align: top !important;
+    background: #ffffff !important;
+  }
+
+  /* Lembaran Kertas A4 / Grid Stiker Tom & Jerry */
+  .label-container-a4 {
+    width: 38mm !important;
+    height: 25mm !important;
+    page-break-inside: avoid !important;
+    margin: 1mm !important;
+    padding: 1mm !important;
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    text-align: center !important;
+    border: 1px dashed #cbd5e1 !important;
+    vertical-align: top !important;
+    overflow: hidden !important;
+    background: #ffffff !important;
+  }
+
+  @page {
+    margin: 0 !important;
+    size: auto !important;
+  }
+
+  .print-mono {
+    font-family: 'Courier New', Courier, monospace, monospace !important;
+    white-space: pre-wrap !important;
+    word-break: break-all !important;
+  }
+
+  .print-dashed-line {
+    border-top: 1px dashed #000000 !important;
+    height: 0 !important;
+    margin: 3px 0 !important;
+    display: block !important;
+  }
+
+  .print-double-dashed-line {
+    border-top: 3px double #000000 !important;
+    height: 0 !important;
+    margin: 5px 0 !important;
+    display: block !important;
+  }
+}

@@ -1,0 +1,14 @@
+node_modules/
+.env
+database.db
+database.db-wal
+database.db-shm
+database.db.bak*
+temp_restore_*
+_temp_update/
+_backup_update/
+dist/
+logs/
+*.log
+.DS_Store
+Thumbs.db
