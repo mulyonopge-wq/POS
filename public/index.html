@@ -3571,15 +3571,19 @@
     }
 
     function confirmApplyUpdate() {
-      if (!cachedLatestUpdateInfo || !cachedLatestUpdateInfo.has_update) {
-        alert("Tidak ada pembaruan yang siap diinstal.");
-        return;
+      const latestVer = cachedLatestUpdateInfo?.latest_version || '';
+      const verText = latestVer ? ` ke versi v${latestVer}` : '';
+
+      const isConfirmed = confirm(
+        `⚡ KONFIRMASI PEMBARUAN SISTEM\n\n` +
+        `Apakah Anda yakin ingin mengunduh & menerapkan pembaruan aplikasi${verText}?\n\n` +
+        `✅ AMAN: Seluruh transaksi, data toko, database (database.db), dan konfigurasi (.env) Anda 100% AMAN & TIDAK AKAN HILANG.\n\n` +
+        `Klik OK untuk memulai pengunduhan & pembaruan otomatis.`
+      );
+
+      if (isConfirmed) {
+        executeSystemUpdate();
       }
-      const label = document.getElementById('modal-update-target-version');
-      if (label) {
-        label.textContent = `v${cachedLatestUpdateInfo.latest_version}`;
-      }
-      openModal('modal-confirm-update');
     }
 
     async function executeSystemUpdate() {
