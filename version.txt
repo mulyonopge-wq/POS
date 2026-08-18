@@ -1,6 +1,6 @@
-1.2.1
-- Fitur Backup & Restore Database SQLite Hot-Reload
-- Direct RawBT Android & Bluetooth Thermal Printing (58mm & 80mm)
-- Native Mobile Bottom Navigation Bar (Kasir, Riwayat, Stok, Printer, Menu)
-- Kategori Produk Lengkap UMKM (Loyang & Cetakan, Bahan Kue, Sembako, dll)
-- Standalone Windows 32-bit & 64-bit Ready
+1.2.9
+- Dukungan Auto-Updater untuk Repositori GitHub Privat & Publik
+- Tema Dark Mode Netral Grey (Zinc) Elegan sebagai Tema Default
+- Ikon Navigasi Sidebar Berwarna-warni (Vibrant Colors)
+- Pengaturan Printer Thermal halaman khusus (Non Popup)
+- Peningkatan Respon Direct wa.me Struk WhatsApp

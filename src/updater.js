@@ -79,21 +79,43 @@ function compareSemver(v1, v2) {
 }
 
 /**
- * HTTP GET Helper dengan redirect support
+ * Ambil token autentikasi GitHub dari parameter, .env, database settings, atau git remote URL
  */
-function fetchRemoteText(url) {
+function getGitHubToken(providedToken) {
+  if (providedToken && typeof providedToken === 'string' && providedToken.trim()) {
+    return providedToken.trim();
+  }
+  if (process.env.GITHUB_TOKEN && process.env.GITHUB_TOKEN.trim()) {
+    return process.env.GITHUB_TOKEN.trim();
+  }
+  try {
+    const gitUrl = execSync('git remote get-url origin', { cwd: ROOT_DIR, encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] }).trim();
+    const match = gitUrl.match(/https:\/\/([^:@]+)@github\.com/);
+    if (match && match[1]) return match[1];
+  } catch (e) {}
+  return null;
+}
+
+/**
+ * HTTP GET Helper dengan redirect & token authentication support
+ */
+function fetchRemoteText(url, token = null) {
   return new Promise((resolve, reject) => {
     const protocol = url.startsWith('https') ? https : http;
+    const authToken = getGitHubToken(token);
     const options = {
       headers: {
         'User-Agent': 'POS-Kasir-Pintar-Updater/1.0',
         'Cache-Control': 'no-cache'
       }
     };
+    if (authToken) {
+      options.headers['Authorization'] = `token ${authToken}`;
+    }
 
     protocol.get(url, options, (res) => {
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-        return resolve(fetchRemoteText(res.headers.location));
+        return resolve(fetchRemoteText(res.headers.location, token));
       }
       if (res.statusCode !== 200) {
         return reject(new Error(`HTTP Status ${res.statusCode} saat mengakses ${url}`));
@@ -106,21 +128,25 @@ function fetchRemoteText(url) {
 }
 
 /**
- * Download file binary (ZIP) ke disk
+ * Download file binary (ZIP) ke disk dengan token auth support
  */
-function downloadFile(url, destPath) {
+function downloadFile(url, destPath, token = null) {
   return new Promise((resolve, reject) => {
     const protocol = url.startsWith('https') ? https : http;
+    const authToken = getGitHubToken(token);
     const options = {
       headers: {
         'User-Agent': 'POS-Kasir-Pintar-Updater/1.0',
         'Cache-Control': 'no-cache'
       }
     };
+    if (authToken) {
+      options.headers['Authorization'] = `token ${authToken}`;
+    }
 
     protocol.get(url, options, (res) => {
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-        return resolve(downloadFile(res.headers.location, destPath));
+        return resolve(downloadFile(res.headers.location, destPath, token));
       }
       if (res.statusCode !== 200) {
         return reject(new Error(`Gagal mengunduh file update. HTTP ${res.statusCode}`));
@@ -138,9 +164,9 @@ function downloadFile(url, destPath) {
 }
 
 /**
- * Cek apakah ada versi baru di GitHub
+ * Cek apakah ada versi baru di GitHub (Mendukung Repositori Publik & Privat)
  */
-async function checkGitHubUpdate(repoInput, preferredBranch = 'main') {
+async function checkGitHubUpdate(repoInput, preferredBranch = 'main', token = null) {
   const localInfo = getLocalVersionInfo();
   const repoInfo = parseRepoString(repoInput);
 
@@ -158,7 +184,7 @@ async function checkGitHubUpdate(repoInput, preferredBranch = 'main') {
   for (const branch of branches) {
     const rawUrl = `https://raw.githubusercontent.com/${repoInfo.owner}/${repoInfo.repo}/${branch}/version.txt?t=${Date.now()}`;
     try {
-      remoteContent = await fetchRemoteText(rawUrl);
+      remoteContent = await fetchRemoteText(rawUrl, token);
       activeBranch = branch;
       break;
     } catch (e) {
@@ -169,7 +195,7 @@ async function checkGitHubUpdate(repoInput, preferredBranch = 'main') {
   if (!remoteContent) {
     return {
       success: false,
-      message: `Tidak dapat menemukan berkas version.txt di repositori GitHub ${repoInfo.owner}/${repoInfo.repo} (Branch: ${branches.join('/')}). Pastikan repositori bersifat Publik dan memiliki file version.txt.`
+      message: `Tidak dapat menemukan berkas version.txt di repositori GitHub ${repoInfo.owner}/${repoInfo.repo} (Branch: ${branches.join('/')}). Pastikan repositori Anda memiliki file version.txt dan Token Akses GitHub telah terkonfigurasi untuk repositori Privat.`
     };
   }
 
@@ -193,10 +219,10 @@ async function checkGitHubUpdate(repoInput, preferredBranch = 'main') {
 }
 
 /**
- * Eksekusi update otomatis dari GitHub
+ * Eksekusi update otomatis dari GitHub (Mendukung Repositori Publik & Privat)
  * DIJAMIN AMAN: database.db & .env tidak akan pernah tertimpa
  */
-async function applyGitHubUpdate(repoInput, branch = 'main') {
+async function applyGitHubUpdate(repoInput, branch = 'main', token = null) {
   const repoInfo = parseRepoString(repoInput);
   if (!repoInfo) {
     throw new Error('Repositori GitHub tidak valid.');
@@ -216,9 +242,13 @@ async function applyGitHubUpdate(repoInput, branch = 'main') {
     fs.mkdirSync(tempDir, { recursive: true });
     fs.mkdirSync(extractDir, { recursive: true });
 
-    // 2. Download zip kode rilis dari GitHub
-    const zipUrl = `https://github.com/${repoInfo.owner}/${repoInfo.repo}/archive/refs/heads/${branch}.zip`;
-    await downloadFile(zipUrl, zipPath);
+    // 2. Download zip kode rilis dari GitHub (Private Repo Zipball / Public Archive)
+    const authToken = getGitHubToken(token);
+    let zipUrl = `https://github.com/${repoInfo.owner}/${repoInfo.repo}/archive/refs/heads/${branch}.zip`;
+    if (authToken) {
+      zipUrl = `https://api.github.com/repos/${repoInfo.owner}/${repoInfo.repo}/zipball/${branch}`;
+    }
+    await downloadFile(zipUrl, zipPath, token);
 
     // 3. Ekstrak arsip zip
     if (process.platform === 'win32') {
