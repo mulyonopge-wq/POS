@@ -8350,8 +8350,19 @@
       }
     }
 
-    function printHistoricalShiftReport(shiftId) {
-      const s = loadedShiftHistoryData.find(item => item.id === shiftId);
+    async function printHistoricalShiftReport(shiftId) {
+      let s = loadedShiftHistoryData.find(item => String(item.id) === String(shiftId));
+      if (!s) {
+        try {
+          const res = await fetchAPI('/api/shifts/history');
+          const json = await res.json();
+          if (json.success && json.shifts) {
+            loadedShiftHistoryData = json.shifts;
+            s = loadedShiftHistoryData.find(item => String(item.id) === String(shiftId));
+          }
+        } catch (e) {}
+      }
+
       if (!s) {
         alert("Data shift tidak ditemukan.");
         return;
@@ -8409,7 +8420,9 @@
       const printContainer = document.getElementById('thermal-shift-report-container');
       if (printContainer) {
         printContainer.innerHTML = htmlContent;
-        window.print();
+        setTimeout(() => {
+          window.print();
+        }, 150);
       }
     }
 
@@ -8653,7 +8666,9 @@
       const printContainer = document.getElementById('thermal-shift-report-container');
       if (printContainer) {
         printContainer.innerHTML = htmlContent;
-        window.print();
+        setTimeout(() => {
+          window.print();
+        }, 150);
       }
     }
 
