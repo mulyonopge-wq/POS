@@ -8419,6 +8419,7 @@
 
       const printContainer = document.getElementById('thermal-shift-report-container');
       if (printContainer) {
+        printContainer.className = paperSize === '58' ? 'receipt-width-58' : 'receipt-width-80';
         printContainer.innerHTML = htmlContent;
         setTimeout(() => {
           window.print();
@@ -8665,6 +8666,7 @@
 
       const printContainer = document.getElementById('thermal-shift-report-container');
       if (printContainer) {
+        printContainer.className = paperSize === '58' ? 'receipt-width-58' : 'receipt-width-80';
         printContainer.innerHTML = htmlContent;
         setTimeout(() => {
           window.print();

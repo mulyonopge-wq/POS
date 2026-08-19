@@ -35,6 +35,7 @@
 /* Sembunyikan container cetak di tampilan layar normal */
 @media screen {
   #thermal-receipt,
+  #thermal-shift-report-container,
   #barcode-print-area {
     display: none !important;
   }
@@ -79,7 +80,8 @@
   /* ===================================================
      1. CETAK STRUK THERMAL (KASIR)
      =================================================== */
-  body:not(.printing-barcode) #thermal-receipt {
+  body:not(.printing-barcode) #thermal-receipt,
+  body:not(.printing-barcode) #thermal-shift-report-container {
     display: block !important;
     visibility: visible !important;
     position: static !important;
@@ -92,7 +94,8 @@
     page-break-inside: avoid !important;
   }
 
-  body:not(.printing-barcode) #thermal-receipt * {
+  body:not(.printing-barcode) #thermal-receipt *,
+  body:not(.printing-barcode) #thermal-shift-report-container * {
     visibility: visible !important;
     color: #000000 !important;
     background: transparent !important;
