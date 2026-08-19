@@ -580,7 +580,7 @@
 
 
           <!-- Filter Bar Responsive -->
-          <div class="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 p-3.5 sm:p-4 rounded-2xl shadow-sm space-y-3">
+          <div id="history-sales-filter" class="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 p-3.5 sm:p-4 rounded-2xl shadow-sm space-y-3">
             <!-- Baris 1: Rentang Tanggal & Preset Cepat -->
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
               <!-- Tanggal Mulai & Akhir -->
@@ -629,7 +629,7 @@
           </div>
 
           <!-- Sales History Table -->
-          <div class="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm">
+          <div id="history-sales-table" class="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm">
             <div class="overflow-x-auto">
               <table class="w-full text-left border-collapse">
                 <thead>
@@ -652,6 +652,43 @@
             </div>
           </div>
         </section>
+
+        
+          <!-- Container 2: Tabel Riwayat Shift & Tutup Kasir -->
+          <div id="history-shifts-container" class="hidden bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm space-y-4 p-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-zinc-800 pb-3">
+              <div>
+                <h3 class="font-outfit font-bold text-base flex items-center gap-2 text-emerald-500">
+                  <i class="fa-solid fa-cash-register"></i> Riwayat Penutupan Shift Kasir
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Daftar sesi kerja kasir, modal awal laci, total omset, kas fisik, dan status selisih kas.</p>
+              </div>
+              <button onclick="fetchShiftHistory()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-rotate"></i> Refresh Shift
+              </button>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-slate-50 dark:bg-zinc-800/80 border-b border-slate-200 dark:border-zinc-700 text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase">
+                    <th class="px-4 py-3">No Shift</th>
+                    <th class="px-4 py-3">Kasir Bertugas</th>
+                    <th class="px-4 py-3">Waktu Buka / Tutup</th>
+                    <th class="px-4 py-3 text-right">Modal Awal</th>
+                    <th class="px-4 py-3 text-right">Total Omset</th>
+                    <th class="px-4 py-3 text-right">Kas Fisik Laci</th>
+                    <th class="px-4 py-3 text-center">Selisih Kas</th>
+                    <th class="px-4 py-3 text-center">Status Sesi</th>
+                    <th class="px-4 py-3 text-center">Cetak Laporan</th>
+                  </tr>
+                </thead>
+                <tbody id="history-shifts-tbody">
+                  <tr><td colspan="9" class="px-6 py-8 text-center text-slate-400">Memuat riwayat shift...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
 
         <!-- TAB 2: STOK & BARANG MASUK -->
         <section id="tab-stok" class="tab-content hidden space-y-6">
