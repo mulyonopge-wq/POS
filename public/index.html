@@ -157,7 +157,7 @@
       </div>
       
       <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto scrollbar-thin">
-        <button onclick="switchTab('kasir')" id="nav-kasir" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium transition-all duration-200 bg-emerald-600 text-white shadow-lg shadow-emerald-950/20">
+        <button onclick="switchTab('kasir')" id="nav-kasir" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium transition-all duration-200 bg-blue-600 text-white shadow-lg shadow-blue-950/20">
           <div class="flex items-center gap-3">
             <i class="fa-solid fa-cart-shopping text-lg w-5 text-emerald-300"></i>
             <span>Penjualan</span>
@@ -570,7 +570,7 @@
           
           <!-- Sub-Tab Navigasi Riwayat: Nota Penjualan vs Riwayat Shift Kasir -->
           <div class="flex border-b border-slate-200 dark:border-zinc-800">
-            <button onclick="switchHistorySubTab('sales')" id="btn-subtab-sales" class="px-5 py-2.5 font-outfit font-bold text-sm border-b-2 border-emerald-500 text-emerald-500 flex items-center gap-2 transition">
+            <button onclick="switchHistorySubTab('sales')" id="btn-subtab-sales" class="px-5 py-2.5 font-outfit font-bold text-sm border-b-2 border-blue-500 text-blue-500 flex items-center gap-2 transition">
               <i class="fa-solid fa-receipt"></i> Nota Transaksi Penjualan
             </button>
             <button onclick="switchHistorySubTab('shifts')" id="btn-subtab-shifts" class="px-5 py-2.5 font-outfit font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition">
@@ -912,7 +912,7 @@
 
           <!-- Sub-Tab Navigasi Laporan -->
           <div class="flex border-b border-slate-200 dark:border-zinc-800">
-            <button onclick="switchReportSubTab('dashboard')" id="btn-report-subtab-dashboard" class="px-5 py-2.5 font-outfit font-bold text-sm border-b-2 border-emerald-500 text-emerald-500 flex items-center gap-2 transition cursor-pointer">
+            <button onclick="switchReportSubTab('dashboard')" id="btn-report-subtab-dashboard" class="px-5 py-2.5 font-outfit font-bold text-sm border-b-2 border-blue-500 text-blue-500 flex items-center gap-2 transition cursor-pointer">
               <i class="fa-solid fa-chart-line"></i> Ringkasan Dashboard & Mutasi Stok
             </button>
             <button onclick="switchReportSubTab('monthly')" id="btn-report-subtab-monthly" class="px-5 py-2.5 font-outfit font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition cursor-pointer">
@@ -4046,13 +4046,13 @@
       if (subTab === 'dashboard') {
         dashboardPanel.classList.remove('hidden');
         monthlyPanel.classList.add('hidden');
-        btnDash.className = 'px-5 py-2.5 font-outfit font-bold text-sm border-b-2 border-emerald-500 text-emerald-500 flex items-center gap-2 transition';
+        btnDash.className = 'px-5 py-2.5 font-outfit font-bold text-sm border-b-2 border-blue-500 text-blue-500 flex items-center gap-2 transition';
         btnMonthly.className = 'px-5 py-2.5 font-outfit font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition';
         updateDashboardReport();
       } else {
         dashboardPanel.classList.add('hidden');
         monthlyPanel.classList.remove('hidden');
-        btnMonthly.className = 'px-5 py-2.5 font-outfit font-bold text-sm border-b-2 border-emerald-500 text-emerald-500 flex items-center gap-2 transition';
+        btnMonthly.className = 'px-5 py-2.5 font-outfit font-bold text-sm border-b-2 border-blue-500 text-blue-500 flex items-center gap-2 transition';
         btnDash.className = 'px-5 py-2.5 font-outfit font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition';
         
         // Auto select current month and year if not selected
@@ -4397,7 +4397,7 @@
 
       // Reset semua status aktif tombol navigasi
       document.querySelectorAll('.nav-btn, .nav-btn-admin').forEach(btn => {
-        btn.classList.remove('bg-emerald-600', 'text-white', 'shadow-lg', 'shadow-emerald-950/20');
+        btn.classList.remove('bg-blue-600', 'bg-emerald-600', 'text-white', 'shadow-lg', 'shadow-blue-950/20', 'shadow-emerald-950/20');
         btn.classList.add('text-slate-400', 'hover:bg-zinc-800', 'hover:text-white');
       });
 
@@ -4405,18 +4405,18 @@
       const activeBtn = document.getElementById(`nav-${tabName}`);
       if (activeBtn) {
         activeBtn.classList.remove('text-slate-400', 'hover:bg-zinc-800', 'hover:text-white');
-        activeBtn.classList.add('bg-emerald-600', 'text-white', 'shadow-lg', 'shadow-emerald-950/20');
+        activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-lg', 'shadow-blue-950/20');
       }
 
       // Update active state pada Native Mobile Bottom Nav Bar
       document.querySelectorAll('.mobile-bnav-btn').forEach(btn => {
-        btn.classList.remove('text-emerald-600', 'dark:text-emerald-400', 'font-bold');
+        btn.classList.remove('text-blue-600', 'dark:text-blue-400', 'text-emerald-600', 'dark:text-emerald-400', 'font-bold');
         btn.classList.add('text-slate-400', 'hover:text-slate-600', 'dark:hover:text-slate-200', 'font-medium');
       });
       const activeBnav = document.getElementById(`bnav-${tabName}`);
       if (activeBnav) {
         activeBnav.classList.remove('text-slate-400', 'hover:text-slate-600', 'dark:hover:text-slate-200', 'font-medium');
-        activeBnav.classList.add('text-emerald-600', 'dark:text-emerald-400', 'font-bold');
+        activeBnav.classList.add('text-blue-600', 'dark:text-blue-400', 'font-bold');
       }
 
       // Close mobile sidebar if open
@@ -8550,7 +8550,7 @@
           salesBtn.className = "px-5 py-2.5 font-outfit font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition";
         }
         if (shiftsBtn) {
-          shiftsBtn.className = "px-5 py-2.5 font-outfit font-bold text-sm border-b-2 border-emerald-500 text-emerald-500 flex items-center gap-2 transition";
+          shiftsBtn.className = "px-5 py-2.5 font-outfit font-bold text-sm border-b-2 border-blue-500 text-blue-500 flex items-center gap-2 transition";
         }
         if (salesFilter) salesFilter.classList.add('hidden');
         if (salesTable) salesTable.classList.add('hidden');
@@ -8558,7 +8558,7 @@
         fetchShiftHistory();
       } else {
         if (salesBtn) {
-          salesBtn.className = "px-5 py-2.5 font-outfit font-bold text-sm border-b-2 border-emerald-500 text-emerald-500 flex items-center gap-2 transition";
+          salesBtn.className = "px-5 py-2.5 font-outfit font-bold text-sm border-b-2 border-blue-500 text-blue-500 flex items-center gap-2 transition";
         }
         if (shiftsBtn) {
           shiftsBtn.className = "px-5 py-2.5 font-outfit font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition";
