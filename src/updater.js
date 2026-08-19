@@ -182,6 +182,19 @@ async function checkGitHubUpdate(repoInput, preferredBranch = 'main', token = nu
   let activeBranch = preferredBranch;
 
   for (const branch of branches) {
+    // 1. Coba lewat API Contents (Real-time 0-cache delay & support private repo)
+    try {
+      const apiUrl = `https://api.github.com/repos/${repoInfo.owner}/${repoInfo.repo}/contents/version.txt?ref=${branch}`;
+      const apiResText = await fetchRemoteText(apiUrl, token);
+      const apiJson = JSON.parse(apiResText);
+      if (apiJson.content && apiJson.encoding === 'base64') {
+        remoteContent = Buffer.from(apiJson.content, 'base64').toString('utf8');
+        activeBranch = branch;
+        break;
+      }
+    } catch (e) {}
+
+    // 2. Fallback ke raw.githubusercontent.com
     const rawUrl = `https://raw.githubusercontent.com/${repoInfo.owner}/${repoInfo.repo}/${branch}/version.txt?t=${Date.now()}`;
     try {
       remoteContent = await fetchRemoteText(rawUrl, token);
