@@ -8,7 +8,7 @@ const qrisUtil = require('./qrisUtil');
 const updater = require('./updater');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 const HOST = process.env.HOST || '0.0.0.0';
 
 app.use(cors());
@@ -848,6 +848,176 @@ app.post('/api/products/adjust-stock', authenticate, (req, res) => {
 
 
 // ==========================================
+// 1.5. ENDPOINT SESI BUKA & TUTUP KASIR (SHIFT MANAGEMENT)
+// ==========================================
+
+// Cek Sesi Shift Kasir Aktif & Summary Realtime
+app.get('/api/shifts/active', authenticate, (req, res) => {
+  try {
+    const activeShift = db.prepare(`
+      SELECT * FROM t_cashier_shifts 
+      WHERE user_id = ? AND status = 'OPEN' 
+      ORDER BY id DESC LIMIT 1
+    `).get(req.user.id);
+
+    if (!activeShift) {
+      return res.json({ success: true, has_active_shift: false, shift: null });
+    }
+
+    const salesSummary = db.prepare(`
+      SELECT 
+        COALESCE(SUM(CASE WHEN payment_type = 'CASH' THEN total_amount ELSE 0 END), 0) as total_sales_cash,
+        COALESCE(SUM(CASE WHEN payment_type = 'QRIS' THEN total_amount ELSE 0 END), 0) as total_sales_qris,
+        COALESCE(SUM(CASE WHEN payment_type = 'CREDIT' THEN total_amount ELSE 0 END), 0) as total_sales_credit,
+        COALESCE(SUM(total_amount), 0) as total_sales_overall,
+        COALESCE(SUM(total_profit), 0) as total_profit_overall,
+        COUNT(id) as total_transactions
+      FROM t_sales 
+      WHERE shift_id = ? AND payment_status != 'VOID'
+    `).get(activeShift.id);
+
+    const expectedCash = activeShift.initial_cash + salesSummary.total_sales_cash;
+
+    return res.json({
+      success: true,
+      has_active_shift: true,
+      shift: {
+        ...activeShift,
+        ...salesSummary,
+        expected_cash: expectedCash
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Buka Kasir Baru (Input Modal Awal Laci)
+app.post('/api/shifts/open', authenticate, (req, res) => {
+  try {
+    const { initial_cash = 0 } = req.body || {};
+    const initialCashVal = parseFloat(initial_cash) || 0;
+
+    const existingShift = db.prepare(`
+      SELECT id FROM t_cashier_shifts 
+      WHERE user_id = ? AND status = 'OPEN' 
+      LIMIT 1
+    `).get(req.user.id);
+
+    if (existingShift) {
+      return res.status(400).json({ success: false, message: 'Anda sudah memiliki sesi Buka Kasir yang sedang aktif.' });
+    }
+
+    const todayStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const countToday = db.prepare(`
+      SELECT COUNT(*) as cnt FROM t_cashier_shifts WHERE shift_no LIKE ?
+    `).get(`S-${todayStr}-%`)?.cnt || 0;
+    const shiftNo = `S-${todayStr}-${String(countToday + 1).padStart(3, '0')}`;
+
+    const info = db.prepare(`
+      INSERT INTO t_cashier_shifts (shift_no, user_id, cashier_name, initial_cash, status)
+      VALUES (?, ?, ?, ?, 'OPEN')
+    `).run(shiftNo, req.user.id, req.user.name, initialCashVal);
+
+    const newShift = db.prepare(`SELECT * FROM t_cashier_shifts WHERE id = ?`).get(info.lastInsertRowid);
+
+    return res.json({
+      success: true,
+      message: `Sesi Kasir berhasil dibuka! Modal awal: Rp ${initialCashVal.toLocaleString('id-ID')}`,
+      shift: newShift
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Tutup Kasir (Input Uang Fisik, Hitung Selisih, Generate Laporan Shift)
+app.post('/api/shifts/close', authenticate, (req, res) => {
+  try {
+    const { actual_cash = 0, notes = '' } = req.body || {};
+    const actualCashVal = parseFloat(actual_cash) || 0;
+
+    const activeShift = db.prepare(`
+      SELECT * FROM t_cashier_shifts 
+      WHERE user_id = ? AND status = 'OPEN' 
+      ORDER BY id DESC LIMIT 1
+    `).get(req.user.id);
+
+    if (!activeShift) {
+      return res.status(400).json({ success: false, message: 'Tidak ada sesi Buka Kasir aktif yang ditemukan.' });
+    }
+
+    const salesSummary = db.prepare(`
+      SELECT 
+        COALESCE(SUM(CASE WHEN payment_type = 'CASH' THEN total_amount ELSE 0 END), 0) as total_sales_cash,
+        COALESCE(SUM(CASE WHEN payment_type = 'QRIS' THEN total_amount ELSE 0 END), 0) as total_sales_qris,
+        COALESCE(SUM(CASE WHEN payment_type = 'CREDIT' THEN total_amount ELSE 0 END), 0) as total_sales_credit,
+        COALESCE(SUM(total_amount), 0) as total_sales_overall,
+        COALESCE(SUM(total_profit), 0) as total_profit_overall,
+        COUNT(id) as total_transactions
+      FROM t_sales 
+      WHERE shift_id = ? AND payment_status != 'VOID'
+    `).get(activeShift.id);
+
+    const expectedCash = activeShift.initial_cash + salesSummary.total_sales_cash;
+    const cashDifference = actualCashVal - expectedCash;
+
+    db.prepare(`
+      UPDATE t_cashier_shifts SET
+        closed_at = CURRENT_TIMESTAMP,
+        expected_cash = ?,
+        actual_cash = ?,
+        cash_difference = ?,
+        total_sales_cash = ?,
+        total_sales_qris = ?,
+        total_sales_credit = ?,
+        total_sales_overall = ?,
+        total_profit_overall = ?,
+        total_transactions = ?,
+        notes = ?,
+        status = 'CLOSED'
+      WHERE id = ?
+    `).run(
+      expectedCash,
+      actualCashVal,
+      cashDifference,
+      salesSummary.total_sales_cash,
+      salesSummary.total_sales_qris,
+      salesSummary.total_sales_credit,
+      salesSummary.total_sales_overall,
+      salesSummary.total_profit_overall,
+      salesSummary.total_transactions,
+      notes,
+      activeShift.id
+    );
+
+    const closedShift = db.prepare(`SELECT * FROM t_cashier_shifts WHERE id = ?`).get(activeShift.id);
+
+    return res.json({
+      success: true,
+      message: 'Sesi Kasir berhasil ditutup. Laporan penjualan harian/shift telah dibuat.',
+      shift: closedShift
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Riwayat Penutupan Shift Kasir (Untuk Audit Admin/Kasir)
+app.get('/api/shifts/history', authenticate, (req, res) => {
+  try {
+    const shifts = db.prepare(`
+      SELECT * FROM t_cashier_shifts 
+      ORDER BY id DESC LIMIT 50
+    `).all();
+    return res.json({ success: true, shifts });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+
+// ==========================================
 // 2. ENDPOINT CHECKOUT PENJUALAN & RIWAYAT (SALES)
 // ==========================================
 app.post('/api/sales/checkout', authenticate, (req, res) => {
@@ -856,6 +1026,14 @@ app.post('/api/sales/checkout', authenticate, (req, res) => {
   if (!payment_type || !items || !items.length) {
     return res.status(400).json({ success: false, message: 'Keranjang belanja kosong atau data tidak lengkap' });
   }
+
+  // Dapatkan shift_id kasir aktif jika ada
+  const activeShift = db.prepare(`
+    SELECT id FROM t_cashier_shifts 
+    WHERE user_id = ? AND status = 'OPEN' 
+    ORDER BY id DESC LIMIT 1
+  `).get(req.user.id);
+  const currentShiftId = activeShift ? activeShift.id : null;
 
   const checkoutTx = db.transaction(() => {
     const invoiceNo = generateInvoiceNumber();
@@ -933,8 +1111,8 @@ app.post('/api/sales/checkout', authenticate, (req, res) => {
 
     const insertSale = db.prepare(`
       INSERT INTO t_sales (
-        invoice_no, customer_id, user_id, cashier_name, discount_amount, total_amount, total_profit, payment_type, payment_status, due_date, cash_amount, change_amount, debt_balance
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        invoice_no, customer_id, user_id, cashier_name, discount_amount, total_amount, total_profit, payment_type, payment_status, due_date, cash_amount, change_amount, debt_balance, shift_id
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       invoiceNo,
       customer_id || null,
@@ -948,7 +1126,8 @@ app.post('/api/sales/checkout', authenticate, (req, res) => {
       payment_type === 'CREDIT' ? due_date || null : null,
       finalCash,
       changeAmount,
-      debtBalance
+      debtBalance,
+      currentShiftId
     );
 
     const saleId = insertSale.lastInsertRowid;

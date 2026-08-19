@@ -236,6 +236,13 @@
         </div>
 
         <div class="flex items-center gap-1.5 md:gap-3 ml-auto">
+          
+          <!-- Quick Shift Kasir Button -->
+          <button type="button" onclick="handleShiftButtonClick()" id="btn-header-shift-status" class="px-2.5 py-1.5 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/80 rounded-xl flex items-center gap-1.5 text-xs font-bold shadow-xs transition-transform active:scale-95" title="Sesi Buka / Tutup Kasir">
+            <i class="fa-solid fa-cash-register text-sm"></i>
+            <span id="header-shift-status-label">Buka Kasir</span>
+          </button>
+
           <!-- Quick Printer Settings Button -->
           <button type="button" onclick="switchTab('printer')" class="px-2.5 py-1.5 bg-indigo-50 dark:bg-zinc-900/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800/80 rounded-xl flex items-center gap-1.5 text-xs font-bold shadow-xs transition-transform active:scale-95" title="Pengaturan Printer">
             <i class="fa-solid fa-print text-sm"></i>
@@ -1602,6 +1609,130 @@
   </div>
 
   
+
+  
+  <!-- Modal Buka Kasir -->
+  <div id="modal-open-shift" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-white dark:bg-zinc-900 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 border border-slate-200 dark:border-zinc-800">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-zinc-800">
+        <h3 class="font-outfit font-bold text-lg flex items-center gap-2 text-emerald-500">
+          <i class="fa-solid fa-cash-register"></i> Buka Kasir & Sesi Kerja Baru
+        </h3>
+        <button onclick="closeModal('modal-open-shift')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <div class="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 rounded-xl text-emerald-800 dark:text-emerald-300">
+          <p class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-circle-info"></i> Masukkan Modal Awal Laci</p>
+          <p class="text-[11px] text-emerald-700 dark:text-emerald-400 mt-0.5">Input jumlah uang kas pecahan/kembalian di laci kasir sebelum memulai transaksi nota hari ini.</p>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Kasir Bertugas:</label>
+          <input type="text" id="open-shift-cashier-name" readonly class="w-full px-3.5 py-2.5 border border-slate-200 dark:border-zinc-700 rounded-xl bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-slate-200 font-bold">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Modal Awal Laci Kasir (Rp):</label>
+          <input type="number" id="open-shift-initial-cash" placeholder="0" value="0" class="w-full px-3.5 py-2.5 border border-slate-300 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-800 text-slate-800 dark:text-slate-100 font-mono font-bold text-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+          <div class="flex gap-2 mt-2">
+            <button type="button" onclick="setInitialCashQuick(100000)" class="px-2.5 py-1 bg-slate-200 dark:bg-zinc-800 hover:bg-slate-300 dark:hover:bg-zinc-700 text-slate-700 dark:text-slate-300 rounded-lg text-[11px] font-bold">Rp 100 rb</button>
+            <button type="button" onclick="setInitialCashQuick(200000)" class="px-2.5 py-1 bg-slate-200 dark:bg-zinc-800 hover:bg-slate-300 dark:hover:bg-zinc-700 text-slate-700 dark:text-slate-300 rounded-lg text-[11px] font-bold">Rp 200 rb</button>
+            <button type="button" onclick="setInitialCashQuick(500000)" class="px-2.5 py-1 bg-slate-200 dark:bg-zinc-800 hover:bg-slate-300 dark:hover:bg-zinc-700 text-slate-700 dark:text-slate-300 rounded-lg text-[11px] font-bold">Rp 500 rb</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-slate-100 dark:border-zinc-800 flex justify-end gap-2">
+        <button type="button" onclick="closeModal('modal-open-shift')" class="px-4 py-2 bg-slate-200 dark:bg-zinc-800 hover:bg-slate-300 dark:hover:bg-zinc-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold text-xs">Batal</button>
+        <button type="button" onclick="executeOpenShift()" id="btn-execute-open-shift" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-transform">
+          <i class="fa-solid fa-lock-open"></i> <span>BUKA KASIR SEKARANG</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tutup Kasir & Laporan Shift -->
+  <div id="modal-close-shift" class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50 hidden overflow-y-auto">
+    <div class="bg-white dark:bg-zinc-900 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-5 border border-slate-200 dark:border-zinc-800 my-8">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-zinc-800">
+        <div>
+          <h3 class="font-outfit font-bold text-xl flex items-center gap-2 text-rose-500">
+            <i class="fa-solid fa-door-closed"></i> Tutup Kasir & Laporan Penjualan Shift
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5" id="close-shift-no-label">Shift No: -</p>
+        </div>
+        <button onclick="closeModal('modal-close-shift')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <!-- Ringkasan Omset Shift -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+        <div class="p-3 bg-slate-50 dark:bg-zinc-800/60 rounded-xl border border-slate-200 dark:border-zinc-700">
+          <span class="text-slate-400 block text-[11px]">Modal Awal Laci:</span>
+          <strong id="close-shift-initial-cash" class="text-sm font-mono text-slate-800 dark:text-slate-100">Rp 0</strong>
+        </div>
+        <div class="p-3 bg-emerald-50 dark:bg-emerald-950/40 rounded-xl border border-emerald-200 dark:border-emerald-900/60">
+          <span class="text-emerald-600 dark:text-emerald-400 block text-[11px]">Penjualan Tunai:</span>
+          <strong id="close-shift-sales-cash" class="text-sm font-mono text-emerald-600 dark:text-emerald-400">Rp 0</strong>
+        </div>
+        <div class="p-3 bg-purple-50 dark:bg-purple-950/40 rounded-xl border border-purple-200 dark:border-purple-900/60">
+          <span class="text-purple-600 dark:text-purple-400 block text-[11px]">Penjualan QRIS:</span>
+          <strong id="close-shift-sales-qris" class="text-sm font-mono text-purple-600 dark:text-purple-400">Rp 0</strong>
+        </div>
+        <div class="p-3 bg-rose-50 dark:bg-rose-950/40 rounded-xl border border-rose-200 dark:border-rose-900/60">
+          <span class="text-rose-600 dark:text-rose-400 block text-[11px]">Penjualan Tempo/Bon:</span>
+          <strong id="close-shift-sales-credit" class="text-sm font-mono text-rose-600 dark:text-rose-400">Rp 0</strong>
+        </div>
+      </div>
+
+      <div class="p-4 bg-indigo-50 dark:bg-zinc-800/80 rounded-xl border border-indigo-200 dark:border-zinc-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-xs">
+        <div>
+          <span class="text-slate-500 dark:text-slate-400 text-[11px]">Total Omset Shift: <strong id="close-shift-sales-overall" class="text-indigo-600 dark:text-indigo-400 text-sm font-mono font-bold">Rp 0</strong></span>
+          <span class="text-slate-500 dark:text-slate-400 text-[11px] block mt-0.5">Total Laba Kotor: <strong id="close-shift-profit-overall" class="text-emerald-600 dark:text-emerald-400 font-bold font-mono">Rp 0</strong> (<span id="close-shift-tx-count">0</span> Nota)</span>
+        </div>
+        <div class="bg-white dark:bg-zinc-900 p-2.5 rounded-lg border border-indigo-200 dark:border-zinc-700 text-right">
+          <span class="text-[11px] text-slate-400 block">Uang Kas Seharusnya di Laci (Modal + Tunai):</span>
+          <strong id="close-shift-expected-cash" class="text-base font-mono font-bold text-indigo-600 dark:text-indigo-400">Rp 0</strong>
+        </div>
+      </div>
+
+      <!-- Form Hitung Kas Fisik -->
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-800 dark:text-slate-100 mb-1">Hitungan Uang Kas Fisik di Laci (Rp):</label>
+          <input type="number" id="close-shift-actual-cash" oninput="calculateShiftDifference()" placeholder="Masukkan jumlah uang kas fisik hasil hitung manual..." class="w-full px-3.5 py-2.5 border border-slate-300 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-800 text-slate-800 dark:text-slate-100 font-mono font-bold text-lg focus:ring-2 focus:ring-rose-500 focus:outline-none">
+        </div>
+
+        <!-- Selisih Status Card -->
+        <div id="close-shift-diff-card" class="p-3.5 rounded-xl border flex items-center justify-between bg-slate-50 dark:bg-zinc-800 border-slate-200 dark:border-zinc-700">
+          <span class="font-bold text-slate-700 dark:text-slate-200">Status Selisih Kas:</span>
+          <span id="close-shift-diff-badge" class="px-2.5 py-1 rounded-lg font-bold font-mono text-xs bg-slate-200 dark:bg-zinc-700 text-slate-700 dark:text-slate-200">Rp 0 (PAS)</span>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Catatan Serah Terima / Penjelasan Selisih:</label>
+          <textarea id="close-shift-notes" rows="2" placeholder="Catatan tambahan kasir (opsional)..." class="w-full px-3.5 py-2 border border-slate-300 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-800 text-slate-800 dark:text-slate-100 text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none"></textarea>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-slate-100 dark:border-zinc-800 flex flex-wrap justify-between items-center gap-2">
+        <button type="button" onclick="printShiftReportReceipt()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-sm transition-transform">
+          <i class="fa-solid fa-print"></i> <span>Cetak Laporan Shift (Thermal)</span>
+        </button>
+
+        <div class="flex gap-2">
+          <button type="button" onclick="closeModal('modal-close-shift')" class="px-4 py-2.5 bg-slate-200 dark:bg-zinc-800 hover:bg-slate-300 dark:hover:bg-zinc-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold text-xs">Batal</button>
+          <button type="button" onclick="executeCloseShift()" id="btn-execute-close-shift" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-transform">
+            <i class="fa-solid fa-door-closed"></i> <span>TUTUP KASIR & SIMPAN</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container Cetak Thermal Laporan Shift (Sembunyi di Layar) -->
+  <div id="thermal-shift-report-container" class="hidden print:block font-mono text-black text-xs leading-tight"></div>
+
 
   <!-- Modal Edit Profil Mandiri -->
   <div id="modal-edit-profile" class="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50 hidden">
@@ -8061,6 +8192,255 @@
         }
       }
     }
+
+    
+    // ==========================================
+    // SHIFT MANAGEMENT (BUKA & TUTUP KASIR)
+    // ==========================================
+    let activeShiftData = null;
+
+    async function checkActiveShift(autoPromptOpen = false) {
+      try {
+        const res = await fetchAPI('/api/shifts/active');
+        const json = await res.json();
+
+        const btnLabel = document.getElementById('header-shift-status-label');
+        const btnHeader = document.getElementById('btn-header-shift-status');
+
+        if (json.success && json.has_active_shift) {
+          activeShiftData = json.shift;
+          if (btnLabel) btnLabel.textContent = 'Tutup Kasir';
+          if (btnHeader) {
+            btnHeader.className = "px-2.5 py-1.5 bg-rose-50 dark:bg-rose-950/60 hover:bg-rose-100 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800/80 rounded-xl flex items-center gap-1.5 text-xs font-bold shadow-xs transition-transform active:scale-95";
+            btnHeader.title = `Sesi Aktif: ${activeShiftData.shift_no} (Kasir: ${activeShiftData.cashier_name})`;
+          }
+          return activeShiftData;
+        } else {
+          activeShiftData = null;
+          if (btnLabel) btnLabel.textContent = 'Buka Kasir';
+          if (btnHeader) {
+            btnHeader.className = "px-2.5 py-1.5 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/80 rounded-xl flex items-center gap-1.5 text-xs font-bold shadow-xs transition-transform active:scale-95";
+            btnHeader.title = "Belum Ada Sesi Kasir Aktif";
+          }
+          if (autoPromptOpen && currentUser) {
+            openOpenShiftModal();
+          }
+          return null;
+        }
+      } catch (err) {
+        console.error("Gagal memeriksa status shift kasir:", err);
+        return null;
+      }
+    }
+
+    function handleShiftButtonClick() {
+      if (activeShiftData) {
+        openCloseShiftModal();
+      } else {
+        openOpenShiftModal();
+      }
+    }
+
+    function setInitialCashQuick(amount) {
+      const input = document.getElementById('open-shift-initial-cash');
+      if (input) input.value = amount;
+    }
+
+    function openOpenShiftModal() {
+      const nameInput = document.getElementById('open-shift-cashier-name');
+      if (nameInput) nameInput.value = currentUser?.name || 'Kasir';
+      const initialCashInput = document.getElementById('open-shift-initial-cash');
+      if (initialCashInput) initialCashInput.value = 0;
+      openModal('modal-open-shift');
+    }
+
+    async function executeOpenShift() {
+      const initialCashInput = document.getElementById('open-shift-initial-cash');
+      const initialCashVal = parseFloat(initialCashInput?.value || 0);
+
+      const btn = document.getElementById('btn-execute-open-shift');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Membuka Kasir...</span>';
+      }
+
+      try {
+        const res = await fetchAPI('/api/shifts/open', {
+          method: 'POST',
+          body: JSON.stringify({ initial_cash: initialCashVal })
+        });
+        const json = await res.json();
+
+        if (json.success) {
+          closeModal('modal-open-shift');
+          playBeep('success');
+          alert(json.message || 'Sesi Kasir berhasil dibuka!');
+          await checkActiveShift();
+        } else {
+          playBeep('error');
+          alert('Gagal membuka kasir: ' + (json.message || json.error));
+        }
+      } catch (err) {
+        playBeep('error');
+        alert('Terjadi kesalahan: ' + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-lock-open"></i> <span>BUKA KASIR SEKARANG</span>';
+        }
+      }
+    }
+
+    async function openCloseShiftModal() {
+      const shift = await checkActiveShift();
+      if (!shift) {
+        alert("Tidak ada sesi kasir aktif yang perlu ditutup.");
+        return;
+      }
+
+      document.getElementById('close-shift-no-label').textContent = `Shift No: ${shift.shift_no} | Buka: ${formatDateID(shift.opened_at)}`;
+      document.getElementById('close-shift-initial-cash').textContent = 'Rp ' + (shift.initial_cash || 0).toLocaleString('id-ID');
+      document.getElementById('close-shift-sales-cash').textContent = 'Rp ' + (shift.total_sales_cash || 0).toLocaleString('id-ID');
+      document.getElementById('close-shift-sales-qris').textContent = 'Rp ' + (shift.total_sales_qris || 0).toLocaleString('id-ID');
+      document.getElementById('close-shift-sales-credit').textContent = 'Rp ' + (shift.total_sales_credit || 0).toLocaleString('id-ID');
+      document.getElementById('close-shift-sales-overall').textContent = 'Rp ' + (shift.total_sales_overall || 0).toLocaleString('id-ID');
+      document.getElementById('close-shift-profit-overall').textContent = 'Rp ' + (shift.total_profit_overall || 0).toLocaleString('id-ID');
+      document.getElementById('close-shift-tx-count').textContent = shift.total_transactions || 0;
+      document.getElementById('close-shift-expected-cash').textContent = 'Rp ' + (shift.expected_cash || 0).toLocaleString('id-ID');
+
+      const actualInput = document.getElementById('close-shift-actual-cash');
+      if (actualInput) actualInput.value = shift.expected_cash || 0;
+      calculateShiftDifference();
+
+      openModal('modal-close-shift');
+    }
+
+    function calculateShiftDifference() {
+      if (!activeShiftData) return;
+      const expected = activeShiftData.expected_cash || 0;
+      const actualVal = parseFloat(document.getElementById('close-shift-actual-cash')?.value || 0);
+      const diff = actualVal - expected;
+
+      const badge = document.getElementById('close-shift-diff-badge');
+      const card = document.getElementById('close-shift-diff-card');
+
+      if (!badge || !card) return;
+
+      if (diff === 0) {
+        badge.textContent = 'Rp 0 (PAS)';
+        badge.className = 'px-2.5 py-1 rounded-lg font-bold font-mono text-xs bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300';
+        card.className = 'p-3.5 rounded-xl border flex items-center justify-between bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/60';
+      } else if (diff < 0) {
+        badge.textContent = `- Rp ${Math.abs(diff).toLocaleString('id-ID')} (KURANG)`;
+        badge.className = 'px-2.5 py-1 rounded-lg font-bold font-mono text-xs bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300';
+        card.className = 'p-3.5 rounded-xl border flex items-center justify-between bg-rose-50/50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/60';
+      } else {
+        badge.textContent = `+ Rp ${diff.toLocaleString('id-ID')} (LEBIH)`;
+        badge.className = 'px-2.5 py-1 rounded-lg font-bold font-mono text-xs bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300';
+        card.className = 'p-3.5 rounded-xl border flex items-center justify-between bg-indigo-50/50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-900/60';
+      }
+    }
+
+    async function executeCloseShift() {
+      if (!activeShiftData) return;
+      const actualVal = parseFloat(document.getElementById('close-shift-actual-cash')?.value || 0);
+      const notesVal = document.getElementById('close-shift-notes')?.value.trim() || '';
+
+      const btn = document.getElementById('btn-execute-close-shift');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Menutup Kasir...</span>';
+      }
+
+      try {
+        const res = await fetchAPI('/api/shifts/close', {
+          method: 'POST',
+          body: JSON.stringify({ actual_cash: actualVal, notes: notesVal })
+        });
+        const json = await res.json();
+
+        if (json.success) {
+          closeModal('modal-close-shift');
+          playBeep('success');
+          alert('Sesi Kasir berhasil ditutup! Laporan harian/shift telah disimpan.');
+          await checkActiveShift();
+        } else {
+          playBeep('error');
+          alert('Gagal menutup kasir: ' + (json.message || json.error));
+        }
+      } catch (err) {
+        playBeep('error');
+        alert('Terjadi kesalahan: ' + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-door-closed"></i> <span>TUTUP KASIR & SIMPAN</span>';
+        }
+      }
+    }
+
+    function printShiftReportReceipt() {
+      if (!activeShiftData) return;
+      const actualVal = parseFloat(document.getElementById('close-shift-actual-cash')?.value || 0);
+      const expected = activeShiftData.expected_cash || 0;
+      const diff = actualVal - expected;
+      const notesVal = document.getElementById('close-shift-notes')?.value.trim() || '-';
+
+      const storeName = storeSettingsData?.store_name || 'TOKO HOMENET';
+      const storeAddress = storeSettingsData?.store_address || '';
+      const paperSize = localStorage.getItem('pos_receipt_paper_size') || '58';
+
+      let diffText = '0 (PAS)';
+      if (diff < 0) diffText = `- ${Math.abs(diff).toLocaleString('id-ID')} (KURANG)`;
+      if (diff > 0) diffText = `+ ${diff.toLocaleString('id-ID')} (LEBIH)`;
+
+      const htmlContent = `
+        <div style="font-family: monospace; font-size: ${paperSize === '80' ? '13px' : '11px'}; width: ${paperSize === '80' ? '76mm' : '48mm'}; margin: 0 auto; line-height: 1.3;">
+          <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 5px; margin-bottom: 5px;">
+            <strong style="font-size: 14px;">${storeName}</strong><br>
+            ${storeAddress ? storeAddress + '<br>' : ''}
+            --------------------------------<br>
+            <strong>LAPORAN TUTUP KASIR / SHIFT</strong>
+          </div>
+          <div>
+            Shift No  : ${activeShiftData.shift_no}<br>
+            Kasir     : ${activeShiftData.cashier_name}<br>
+            Buka      : ${formatDateID(activeShiftData.opened_at)}<br>
+            Tutup     : ${formatDateID(new Date())}<br>
+            --------------------------------
+          </div>
+          <div style="margin-top: 5px;">
+            Modal Awal Laci : Rp ${(activeShiftData.initial_cash || 0).toLocaleString('id-ID')}<br>
+            Penjualan Tunai : Rp ${(activeShiftData.total_sales_cash || 0).toLocaleString('id-ID')}<br>
+            Penjualan QRIS  : Rp ${(activeShiftData.total_sales_qris || 0).toLocaleString('id-ID')}<br>
+            Penjualan Tempo : Rp ${(activeShiftData.total_sales_credit || 0).toLocaleString('id-ID')}<br>
+            --------------------------------<br>
+            <strong>TOTAL OMSET   : Rp ${(activeShiftData.total_sales_overall || 0).toLocaleString('id-ID')}</strong><br>
+            Total Laba Kotor: Rp ${(activeShiftData.total_profit_overall || 0).toLocaleString('id-ID')}<br>
+            Total Transaksi : ${activeShiftData.total_transactions || 0} Nota<br>
+            --------------------------------<br>
+            Kas Seharusnya  : Rp ${expected.toLocaleString('id-ID')}<br>
+            Kas Fisik Laci  : Rp ${actualVal.toLocaleString('id-ID')}<br>
+            <strong>SELISIH KAS     : ${diffText}</strong><br>
+            --------------------------------
+          </div>
+          <div style="margin-top: 5px; font-size: 10px;">
+            Catatan: ${notesVal}<br>
+          </div>
+          <div style="text-align: center; margin-top: 15px; border-top: 1px dashed #000; padding-top: 5px;">
+            Terima kasih atas kerja kerasnya!<br>
+            *** LAPORAN SHIFT SAH ***
+          </div>
+        </div>
+      `;
+
+      const printContainer = document.getElementById('thermal-shift-report-container');
+      if (printContainer) {
+        printContainer.innerHTML = htmlContent;
+        window.print();
+      }
+    }
+
 
     function closeModal(id) {
       const el = document.getElementById(id);

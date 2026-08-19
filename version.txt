@@ -1,6 +1,6 @@
 1.3.0
+- Fitur Manajemen Shift: Buka Kasir (Modal Awal Laci) & Tutup Kasir (Hitung Kas Fisik & Selisih)
+- Rekapitulasi Penjualan Shift Real-Time (Omset Tunai, QRIS, Piutang, Laba Kotor, Jumlah Transaksi)
+- Cetak Laporan Penjualan Shift / Harian Thermal (58mm & 80mm)
+- Indikator Status Sesi Kasir di Top Bar Header
 - Dukungan Auto-Updater untuk Repositori GitHub Privat & Publik
-- Tema Dark Mode Netral Grey (Zinc) Elegan sebagai Tema Default
-- Ikon Navigasi Sidebar Berwarna-warni (Vibrant Colors)
-- Pengaturan Printer Thermal halaman khusus (Non Popup)
-- Peningkatan Respon Direct wa.me Struk WhatsApp

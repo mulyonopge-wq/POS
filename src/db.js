@@ -340,6 +340,34 @@ function initDatabase() {
     )
   `).run();
 
+  // 15. Tabel Sesi Buka/Tutup Kasir (Shift Management)
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS t_cashier_shifts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      shift_no TEXT UNIQUE NOT NULL,
+      user_id INTEGER NOT NULL,
+      cashier_name TEXT NOT NULL,
+      opened_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      closed_at DATETIME,
+      initial_cash REAL NOT NULL DEFAULT 0.0,
+      expected_cash REAL DEFAULT 0.0,
+      actual_cash REAL DEFAULT 0.0,
+      cash_difference REAL DEFAULT 0.0,
+      total_sales_cash REAL DEFAULT 0.0,
+      total_sales_qris REAL DEFAULT 0.0,
+      total_sales_credit REAL DEFAULT 0.0,
+      total_sales_overall REAL DEFAULT 0.0,
+      total_profit_overall REAL DEFAULT 0.0,
+      total_transactions INTEGER DEFAULT 0,
+      notes TEXT,
+      status TEXT NOT NULL DEFAULT 'OPEN' CHECK(status IN ('OPEN', 'CLOSED')),
+      FOREIGN KEY (user_id) REFERENCES m_users(id)
+    )
+  `).run();
+
+  db.prepare(`CREATE INDEX IF NOT EXISTS idx_shifts_user ON t_cashier_shifts(user_id)`).run();
+  db.prepare(`CREATE INDEX IF NOT EXISTS idx_shifts_status ON t_cashier_shifts(status)`).run();
+
   // Migrasi otomatis kolom baru untuk database yang sudah berjalan
   autoMigrateColumns();
 }
@@ -358,6 +386,7 @@ function autoMigrateColumns() {
   tryAddColumn('t_sales', 'user_id INTEGER');
   tryAddColumn('t_sales', 'cashier_name TEXT');
   tryAddColumn('t_sales', 'discount_amount REAL NOT NULL DEFAULT 0.0');
+  tryAddColumn('t_sales', 'shift_id INTEGER REFERENCES t_cashier_shifts(id)');
 
   // Migrasi skema t_sales jika database lama belum memiliki CHECK constraint 'QRIS' atau 'VOID'
   try {
