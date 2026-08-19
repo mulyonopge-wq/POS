@@ -1,4 +1,6 @@
-1.3.1
+1.3.2
+- Fitur Unggah & Tampilan Logo Toko (Pojok Kiri Atas Sidebar Header, Mobile Header, & Halaman Login)
+- Tema visual sorotan menu terpilih biru elegan (Highlight selected menu background)
 - Sub-Menu Laporan Keuangan Harian (Per Bulan & Per Tahun) dengan rincian omset, HPP, laba kotor, tunai, QRIS, & tempo
 - Fitur Export Laporan Keuangan Harian ke file CSV / Excel
 - Jendela Modal Preview Laporan Shift Kasir Thermal dengan tombol cetak langsung

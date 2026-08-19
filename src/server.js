@@ -176,7 +176,7 @@ app.post('/api/settings', authenticate, (req, res) => {
     return res.status(403).json({ success: false, message: 'Akses ditolak. Hanya Administrator yang dapat mengubah pengaturan.' });
   }
 
-  const { store_name, store_address, store_phone, receipt_footer, qris_static_payload, github_repo_url, quick_products_mode, quick_products_pinned_ids, wa_gateway_type, wa_gateway_token, wa_gateway_url } = req.body;
+  const { store_name, store_address, store_phone, receipt_footer, qris_static_payload, github_repo_url, quick_products_mode, quick_products_pinned_ids, wa_gateway_type, wa_gateway_token, wa_gateway_url, store_logo } = req.body;
   if (!store_name) {
     return res.status(400).json({ success: false, message: 'Nama toko wajib diisi.' });
   }
@@ -187,6 +187,9 @@ app.post('/api/settings', authenticate, (req, res) => {
     upsert.run('store_address', store_address || '');
     upsert.run('store_phone', store_phone || '');
     upsert.run('receipt_footer', receipt_footer || '');
+    if (store_logo !== undefined) {
+      upsert.run('store_logo', store_logo.trim());
+    }
     if (qris_static_payload !== undefined) {
       upsert.run('qris_static_payload', qris_static_payload.trim());
     }

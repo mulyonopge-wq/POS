@@ -85,10 +85,11 @@
     
     <div class="relative w-full max-w-md bg-zinc-900/90 backdrop-blur-2xl border border-zinc-800 p-8 rounded-3xl shadow-2xl flex flex-col justify-center space-y-6">
       <div class="text-center space-y-2">
-        <div class="w-16 h-16 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-3xl mx-auto border border-emerald-500/20 shadow-lg shadow-emerald-500/10">
-          <i class="fa-solid fa-cash-register"></i>
+        <div class="w-20 h-20 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-3xl mx-auto border border-emerald-500/20 shadow-lg shadow-emerald-500/10 overflow-hidden" id="login-icon-wrapper">
+          <img id="login-store-logo" class="w-full h-full object-contain p-1.5 hidden" alt="Logo Toko" />
+          <i id="login-store-icon" class="fa-solid fa-cash-register"></i>
         </div>
-        <h2 class="text-2xl font-bold font-outfit text-white tracking-wider mt-4">KASIRKU-POS</h2>
+        <h2 id="login-store-name" class="text-2xl font-bold font-outfit text-white tracking-wider mt-4">KASIRKU-POS</h2>
         <p class="text-xs text-slate-400">Sistem Kasir & Manajemen Toko UMKM</p>
       </div>
 
@@ -152,7 +153,8 @@
     <!-- SIDEBAR (DESKTOP & MOBILE) -->
     <aside id="app-sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-zinc-900 text-white transform -translate-x-full md:translate-x-0 md:static md:flex md:flex-shrink-0 md:flex-col transition-transform duration-200 ease-in-out">
       <div class="flex items-center gap-3 px-6 h-16 bg-zinc-950 border-b border-zinc-800">
-        <i class="fa-solid fa-cash-register text-emerald-400 text-2xl"></i>
+        <img id="app-logo-sidebar" class="h-10 w-auto max-w-[150px] object-contain hidden" alt="Logo Toko" />
+        <i id="app-icon-sidebar" class="fa-solid fa-cash-register text-emerald-400 text-2xl"></i>
         <span id="app-title-store-name" class="font-outfit font-bold text-md tracking-wider truncate">KASIRKU</span>
       </div>
       
@@ -229,7 +231,8 @@
             <i class="fa-solid fa-bars text-base"></i>
           </button>
           <div class="flex items-center gap-2">
-            <i class="fa-solid fa-cash-register text-emerald-500 text-base md:hidden"></i>
+            <img id="app-logo-mobile" class="h-7 w-auto max-w-[110px] object-contain hidden md:hidden" alt="Logo Toko" />
+            <i id="app-icon-mobile" class="fa-solid fa-cash-register text-emerald-500 text-base md:hidden"></i>
             <span id="app-title-store-name-mobile" class="font-outfit font-bold text-sm tracking-wider truncate max-w-[130px] md:hidden">KASIRKU</span>
           </div>
         </div>
@@ -3658,9 +3661,27 @@
         if (json.success && json.data) {
           storeSettings = json.data;
           
-          // Terapkan ke Header UI Kasir
+          // Terapkan ke Header UI Kasir & Logo Toko
           document.getElementById('app-title-store-name').textContent = storeSettings.store_name || 'KASIRKU';
           document.getElementById('app-title-store-name-mobile').textContent = storeSettings.store_name || 'KASIRKU';
+          if (document.getElementById('login-store-name')) {
+            document.getElementById('login-store-name').textContent = storeSettings.store_name || 'KASIRKU';
+          }
+
+          if (storeSettings.store_logo) {
+            if (document.getElementById('set-store-logo-base64')) {
+              document.getElementById('set-store-logo-base64').value = storeSettings.store_logo;
+            }
+            const imgPreview = document.getElementById('set-store-logo-preview');
+            const placeholder = document.getElementById('set-store-logo-placeholder');
+            const btnRemove = document.getElementById('btn-remove-logo');
+            if (imgPreview) { imgPreview.src = storeSettings.store_logo; imgPreview.classList.remove('hidden'); }
+            if (placeholder) placeholder.classList.add('hidden');
+            if (btnRemove) btnRemove.classList.remove('hidden');
+          } else {
+            removeStoreLogo();
+          }
+          updateStoreLogoUI(storeSettings.store_logo);
 
           // Masukkan ke input pengaturan form settings
           document.getElementById('set-store-name').value = storeSettings.store_name || '';
@@ -3784,6 +3805,7 @@
       const github_repo_url = document.getElementById('setting-github-repo-input')?.value.trim() || '';
       const wa_gateway_type = document.querySelector('input[name="set-wa-gateway-type"]:checked')?.value || 'direct';
       const wa_gateway_token = document.getElementById('set-wa-gateway-token')?.value.trim() || '';
+      const store_logo = document.getElementById('set-store-logo-base64')?.value || '';
 
       try {
         const res = await fetchAPI('/api/settings', {
@@ -3793,6 +3815,7 @@
             store_phone, 
             store_address, 
             receipt_footer, 
+            store_logo,
             qris_static_payload, 
             github_repo_url,
             wa_gateway_type,
@@ -4389,6 +4412,93 @@
         overlay.classList.add('hidden');
       }
     }
+
+    
+    // ==========================================
+    // LOGO TOKO HANDLER
+    // ==========================================
+    function handleStoreLogoSelect(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      if (file.size > 2 * 1024 * 1024) {
+        alert("Ukuran berkas logo terlalu besar. Maksimal 2MB.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64Data = e.target.result;
+        document.getElementById('set-store-logo-base64').value = base64Data;
+        const imgPreview = document.getElementById('set-store-logo-preview');
+        const placeholder = document.getElementById('set-store-logo-placeholder');
+        const btnRemove = document.getElementById('btn-remove-logo');
+
+        if (imgPreview) {
+          imgPreview.src = base64Data;
+          imgPreview.classList.remove('hidden');
+        }
+        if (placeholder) placeholder.classList.add('hidden');
+        if (btnRemove) btnRemove.classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeStoreLogo() {
+      document.getElementById('set-store-logo-base64').value = '';
+      const imgPreview = document.getElementById('set-store-logo-preview');
+      const placeholder = document.getElementById('set-store-logo-placeholder');
+      const btnRemove = document.getElementById('btn-remove-logo');
+      const fileInput = document.getElementById('set-store-logo-file');
+
+      if (imgPreview) {
+        imgPreview.src = '';
+        imgPreview.classList.add('hidden');
+      }
+      if (placeholder) placeholder.classList.remove('hidden');
+      if (btnRemove) btnRemove.classList.add('hidden');
+      if (fileInput) fileInput.value = '';
+    }
+
+    function updateStoreLogoUI(logoDataUri) {
+      const logoSidebar = document.getElementById('app-logo-sidebar');
+      const iconSidebar = document.getElementById('app-icon-sidebar');
+      const textSidebar = document.getElementById('app-title-store-name');
+
+      const logoMobile = document.getElementById('app-logo-mobile');
+      const iconMobile = document.getElementById('app-icon-mobile');
+      const textMobile = document.getElementById('app-title-store-name-mobile');
+
+      const logoLogin = document.getElementById('login-store-logo');
+      const iconLogin = document.getElementById('login-store-icon');
+
+      if (logoDataUri && logoDataUri.trim() !== '') {
+        // Mode Logo Aktif
+        if (logoSidebar) { logoSidebar.src = logoDataUri; logoSidebar.classList.remove('hidden'); }
+        if (iconSidebar) iconSidebar.classList.add('hidden');
+        if (textSidebar) textSidebar.classList.add('hidden');
+
+        if (logoMobile) { logoMobile.src = logoDataUri; logoMobile.classList.remove('hidden'); }
+        if (iconMobile) iconMobile.classList.add('hidden');
+        if (textMobile) textMobile.classList.add('hidden');
+
+        if (logoLogin) { logoLogin.src = logoDataUri; logoLogin.classList.remove('hidden'); }
+        if (iconLogin) iconLogin.classList.add('hidden');
+      } else {
+        // Mode Default Teks & Ikon
+        if (logoSidebar) { logoSidebar.src = ''; logoSidebar.classList.add('hidden'); }
+        if (iconSidebar) iconSidebar.classList.remove('hidden');
+        if (textSidebar) textSidebar.classList.remove('hidden');
+
+        if (logoMobile) { logoMobile.src = ''; logoMobile.classList.add('hidden'); }
+        if (iconMobile) iconMobile.classList.remove('hidden');
+        if (textMobile) textMobile.classList.remove('hidden');
+
+        if (logoLogin) { logoLogin.src = ''; logoLogin.classList.add('hidden'); }
+        if (iconLogin) iconLogin.classList.remove('hidden');
+      }
+    }
+
 
     function switchTab(tabName) {
       activeTab = tabName;
