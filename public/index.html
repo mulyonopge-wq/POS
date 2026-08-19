@@ -567,6 +567,18 @@
             </div>
           </div>
 
+          
+          <!-- Sub-Tab Navigasi Riwayat: Nota Penjualan vs Riwayat Shift Kasir -->
+          <div class="flex border-b border-slate-200 dark:border-zinc-800">
+            <button onclick="switchHistorySubTab('sales')" id="btn-subtab-sales" class="px-5 py-2.5 font-outfit font-bold text-sm border-b-2 border-emerald-500 text-emerald-500 flex items-center gap-2 transition">
+              <i class="fa-solid fa-receipt"></i> Nota Transaksi Penjualan
+            </button>
+            <button onclick="switchHistorySubTab('shifts')" id="btn-subtab-shifts" class="px-5 py-2.5 font-outfit font-semibold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition">
+              <i class="fa-solid fa-cash-register text-emerald-400"></i> Riwayat Shift & Tutup Kasir
+            </button>
+          </div>
+
+
           <!-- Filter Bar Responsive -->
           <div class="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 p-3.5 sm:p-4 rounded-2xl shadow-sm space-y-3">
             <!-- Baris 1: Rentang Tanggal & Preset Cepat -->
