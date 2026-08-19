@@ -1143,6 +1143,36 @@
                 </div>
 
                 <form onsubmit="handleSettingsUpdateSubmit(event)" class="space-y-4">
+                  <!-- Logo Toko Upload Field -->
+                  <div class="p-4 rounded-xl bg-slate-50 dark:bg-zinc-800/60 border border-slate-200 dark:border-zinc-700/60 space-y-3">
+                    <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                      <i class="fa-solid fa-image text-indigo-500"></i> Logo Toko
+                    </label>
+                    
+                    <div class="flex flex-col sm:flex-row items-center gap-3">
+                      <!-- Image Preview Box -->
+                      <div class="w-20 h-20 rounded-xl border-2 border-dashed border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 flex items-center justify-center overflow-hidden shrink-0 shadow-inner relative">
+                        <img id="set-store-logo-preview" class="w-full h-full object-contain p-1.5 hidden" alt="Preview Logo" />
+                        <i id="set-store-logo-placeholder" class="fa-solid fa-store text-2xl text-slate-400"></i>
+                      </div>
+
+                      <div class="flex-1 space-y-2 text-center sm:text-left">
+                        <input type="file" id="set-store-logo-file" accept="image/*" onchange="handleStoreLogoSelect(event)" class="hidden" />
+                        <input type="hidden" id="set-store-logo-base64" value="" />
+
+                        <div class="flex flex-wrap items-center gap-2 justify-center sm:justify-start">
+                          <button type="button" onclick="document.getElementById('set-store-logo-file').click()" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-transform cursor-pointer">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Upload Logo Toko
+                          </button>
+                          <button type="button" onclick="removeStoreLogo()" id="btn-remove-logo" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 transition cursor-pointer hidden">
+                            <i class="fa-solid fa-trash-can"></i> Hapus Logo
+                          </button>
+                        </div>
+                        <p class="text-[10px] text-slate-400">Format: PNG, JPG, WEBP, SVG (Rekomendasi rasio persegi / proporsional, maks 2MB).</p>
+                      </div>
+                    </div>
+                  </div>
+
                   <div>
                     <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Nama Toko <span class="text-rose-500">*</span></label>
                     <input type="text" id="set-store-name" required class="w-full px-3 py-2 border border-slate-300 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-800 text-xs font-medium text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500">
