@@ -8231,8 +8231,8 @@
     function switchHistorySubTab(subTab) {
       const salesBtn = document.getElementById('btn-subtab-sales');
       const shiftsBtn = document.getElementById('btn-subtab-shifts');
-      const salesFilter = document.querySelector('#tab-history .bg-white.dark\:bg-zinc-900.border');
-      const salesTable = document.querySelector('#tab-history .border.border-slate-200.dark\:border-zinc-800.rounded-2xl.overflow-hidden');
+      const salesFilter = document.getElementById('history-sales-filter');
+      const salesTable = document.getElementById('history-sales-table');
       const shiftsContainer = document.getElementById('history-shifts-container');
 
       if (subTab === 'shifts') {
