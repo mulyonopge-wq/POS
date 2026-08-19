@@ -3530,6 +3530,9 @@
     // ==========================================
 
     function checkSession() {
+      // Selalu muat pengaturan toko (termasuk logo) terlebih dahulu untuk layar login & header
+      fetchSettings();
+
       const token = localStorage.getItem('pos_token');
       if (token) {
         // Sembunyikan login dan tampilkan app
@@ -3547,7 +3550,6 @@
         applyRoleVisibility(role);
 
         // Load awal data
-        fetchSettings();
         fetchCategories();
         fetchProducts();
         fetchCustomers();
