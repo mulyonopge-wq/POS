@@ -8180,6 +8180,15 @@
       return new Date(formatted);
     }
 
+    function formatDateID(dateStr) {
+      if (!dateStr) return '-';
+      try {
+        return parseDatabaseDate(dateStr).toLocaleString('id-ID');
+      } catch (e) {
+        return new Date(dateStr).toLocaleString('id-ID');
+      }
+    }
+
     function openModal(id) {
       const el = document.getElementById(id);
       if (!el) return;
