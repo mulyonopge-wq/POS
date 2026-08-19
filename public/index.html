@@ -1785,13 +1785,13 @@
 
   
   <!-- Modal Preview Laporan Shift Kasir -->
-  <div id="modal-preview-shift-report" class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50 hidden overflow-y-auto">
+  <div id="preview-shift-report-dialog" class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50 hidden overflow-y-auto">
     <div class="bg-white dark:bg-zinc-900 rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-4 border border-slate-200 dark:border-zinc-800 my-8">
       <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-zinc-800">
         <h3 class="font-outfit font-bold text-lg flex items-center gap-2 text-indigo-500">
           <i class="fa-solid fa-print"></i> Cetak Laporan Shift Kasir
         </h3>
-        <button onclick="closeModal('modal-preview-shift-report')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+        <button onclick="closeModal('preview-shift-report-dialog')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
       <!-- Ticket Preview Card -->
@@ -1800,7 +1800,7 @@
       </div>
 
       <div class="pt-3 border-t border-slate-100 dark:border-zinc-800 flex justify-between items-center gap-2">
-        <button type="button" onclick="closeModal('modal-preview-shift-report')" class="px-4 py-2.5 bg-slate-200 dark:bg-zinc-800 hover:bg-slate-300 dark:hover:bg-zinc-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold text-xs">Tutup</button>
+        <button type="button" onclick="closeModal('preview-shift-report-dialog')" class="px-4 py-2.5 bg-slate-200 dark:bg-zinc-800 hover:bg-slate-300 dark:hover:bg-zinc-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold text-xs">Tutup</button>
         <button type="button" onclick="triggerActualShiftPrint()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-md transition-transform">
           <i class="fa-solid fa-print"></i> <span>CETAK STRUK SEKARANG</span>
         </button>
@@ -8394,8 +8394,8 @@
         return;
       }
 
-      const storeName = storeSettingsData?.store_name || 'TOKO HOMENET';
-      const storeAddress = storeSettingsData?.store_address || '';
+      const storeName = storeSettings?.store_name || 'TOKO HOMENET';
+      const storeAddress = storeSettings?.store_address || '';
       const paperSize = localStorage.getItem('pos_receipt_paper_size') || '58';
 
       const diff = s.cash_difference || 0;
@@ -8642,8 +8642,8 @@
       const diff = actualVal - expected;
       const notesVal = document.getElementById('close-shift-notes')?.value.trim() || '-';
 
-      const storeName = storeSettingsData?.store_name || 'TOKO HOMENET';
-      const storeAddress = storeSettingsData?.store_address || '';
+      const storeName = storeSettings?.store_name || 'TOKO HOMENET';
+      const storeAddress = storeSettings?.store_address || '';
       const paperSize = localStorage.getItem('pos_receipt_paper_size') || '58';
 
       let diffText = '0 (PAS)';
