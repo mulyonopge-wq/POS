@@ -1863,6 +1863,85 @@ app.get('/api/reports/dashboard', authenticate, (req, res) => {
   }
 });
 
+// Endpoint Laporan Keuangan Harian (Bulanan & Tahunan)
+app.get('/api/reports/monthly-daily-summary', authenticate, (req, res) => {
+  if (req.user.role !== 'ADMIN') {
+    return res.status(403).json({ success: false, message: 'Akses ditolak. Laporan keuangan hanya dapat diakses oleh Administrator.' });
+  }
+
+  try {
+    const now = new Date();
+    const reqYear = parseInt(req.query.year) || now.getFullYear();
+    const reqMonth = parseInt(req.query.month) || (now.getMonth() + 1);
+
+    const yearStr = String(reqYear);
+    const monthStr = String(reqMonth).padStart(2, '0');
+
+    const dailyRows = db.prepare(`
+      SELECT 
+        date(sale_date, 'localtime') as day_date,
+        COUNT(id) as total_transactions,
+        COALESCE(SUM(total_amount), 0) as total_sales,
+        COALESCE(SUM(total_profit), 0) as total_profit,
+        COALESCE(SUM(CASE WHEN payment_type = 'CASH' THEN total_amount ELSE 0 END), 0) as sales_cash,
+        COALESCE(SUM(CASE WHEN payment_type = 'QRIS' THEN total_amount ELSE 0 END), 0) as sales_qris,
+        COALESCE(SUM(CASE WHEN payment_type = 'CREDIT' THEN total_amount ELSE 0 END), 0) as sales_credit,
+        COALESCE(SUM(total_amount - total_profit), 0) as total_hpp
+      FROM t_sales
+      WHERE strftime('%Y', sale_date, 'localtime') = ?
+        AND strftime('%m', sale_date, 'localtime') = ?
+        AND (payment_status IS NULL OR payment_status != 'VOID')
+      GROUP BY day_date
+      ORDER BY day_date ASC
+    `).all(yearStr, monthStr);
+
+    let monthTotalSales = 0;
+    let monthTotalProfit = 0;
+    let monthTotalHpp = 0;
+    let monthTotalCash = 0;
+    let monthTotalQris = 0;
+    let monthTotalCredit = 0;
+    let monthTotalTransactions = 0;
+
+    dailyRows.forEach(r => {
+      monthTotalSales += r.total_sales;
+      monthTotalProfit += r.total_profit;
+      monthTotalHpp += r.total_hpp;
+      monthTotalCash += r.sales_cash;
+      monthTotalQris += r.sales_qris;
+      monthTotalCredit += r.sales_credit;
+      monthTotalTransactions += r.total_transactions;
+    });
+
+    const daysInMonth = new Date(reqYear, reqMonth, 0).getDate();
+    const activeDaysCount = dailyRows.length;
+    const avgDailySales = activeDaysCount > 0 ? Math.round(monthTotalSales / activeDaysCount) : 0;
+
+    return res.json({
+      success: true,
+      data: {
+        year: reqYear,
+        month: reqMonth,
+        days_in_month: daysInMonth,
+        summary: {
+          total_sales: monthTotalSales,
+          total_profit: monthTotalProfit,
+          total_hpp: monthTotalHpp,
+          total_cash: monthTotalCash,
+          total_qris: monthTotalQris,
+          total_credit: monthTotalCredit,
+          total_transactions: monthTotalTransactions,
+          avg_daily_sales: avgDailySales,
+          active_days_count: activeDaysCount
+        },
+        daily: dailyRows
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Jalankan Server Express
 app.listen(PORT, HOST, () => {
   console.log(`====================================================`);
