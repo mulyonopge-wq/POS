@@ -4470,12 +4470,17 @@
         }
         if (placeholder) placeholder.classList.add('hidden');
         if (btnRemove) btnRemove.classList.remove('hidden');
+
+        // Terapkan langsung pratinjau logo di Sidebar & Top Header
+        updateStoreLogoUI(base64Data);
       };
       reader.readAsDataURL(file);
     }
 
     function removeStoreLogo() {
-      document.getElementById('set-store-logo-base64').value = '';
+      if (document.getElementById('set-store-logo-base64')) {
+        document.getElementById('set-store-logo-base64').value = '';
+      }
       const imgPreview = document.getElementById('set-store-logo-preview');
       const placeholder = document.getElementById('set-store-logo-placeholder');
       const btnRemove = document.getElementById('btn-remove-logo');
@@ -4488,6 +4493,9 @@
       if (placeholder) placeholder.classList.remove('hidden');
       if (btnRemove) btnRemove.classList.add('hidden');
       if (fileInput) fileInput.value = '';
+
+      // Restorasi tampilan ikon bawaan di Sidebar & Top Header
+      updateStoreLogoUI('');
     }
 
     function updateStoreLogoUI(logoDataUri) {
