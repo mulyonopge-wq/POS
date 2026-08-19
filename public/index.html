@@ -153,7 +153,7 @@
     <!-- SIDEBAR (DESKTOP & MOBILE) -->
     <aside id="app-sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-zinc-900 text-white transform -translate-x-full md:translate-x-0 md:static md:flex md:flex-shrink-0 md:flex-col transition-transform duration-200 ease-in-out">
       <div class="flex items-center gap-3 px-6 h-16 bg-zinc-950 border-b border-zinc-800">
-        <img id="app-logo-sidebar" class="h-10 w-auto max-w-[150px] object-contain hidden" alt="Logo Toko" />
+        <img id="app-logo-sidebar" class="h-12 w-auto max-w-[190px] object-contain hidden" alt="Logo Toko" />
         <i id="app-icon-sidebar" class="fa-solid fa-cash-register text-emerald-400 text-2xl"></i>
         <span id="app-title-store-name" class="font-outfit font-bold text-md tracking-wider truncate">KASIRKU</span>
       </div>
@@ -4509,9 +4509,11 @@
 
       const logoLogin = document.getElementById('login-store-logo');
       const iconLogin = document.getElementById('login-store-icon');
+      const textLogin = document.getElementById('login-store-name');
+      const wrapperLogin = document.getElementById('login-icon-wrapper');
 
       if (logoDataUri && logoDataUri.trim() !== '') {
-        // Mode Logo Aktif
+        // Mode Logo Aktif (Perbesar Logo & Sembunyikan Teks Nama Toko di Login & Header)
         if (logoSidebar) { logoSidebar.src = logoDataUri; logoSidebar.classList.remove('hidden'); }
         if (iconSidebar) iconSidebar.classList.add('hidden');
         if (textSidebar) textSidebar.classList.add('hidden');
@@ -4520,8 +4522,15 @@
         if (iconMobile) iconMobile.classList.add('hidden');
         if (textMobile) textMobile.classList.add('hidden');
 
-        if (logoLogin) { logoLogin.src = logoDataUri; logoLogin.classList.remove('hidden'); }
+        if (logoLogin) { 
+          logoLogin.src = logoDataUri; 
+          logoLogin.classList.remove('hidden'); 
+        }
         if (iconLogin) iconLogin.classList.add('hidden');
+        if (textLogin) textLogin.classList.add('hidden'); // Sembunyikan tulisan nama toko bawaan karena sudah ada di gambar logo
+        if (wrapperLogin) {
+          wrapperLogin.className = "w-60 h-32 mx-auto flex items-center justify-center overflow-hidden bg-transparent shadow-none border-0";
+        }
       } else {
         // Mode Default Teks & Ikon
         if (logoSidebar) { logoSidebar.src = ''; logoSidebar.classList.add('hidden'); }
@@ -4534,6 +4543,10 @@
 
         if (logoLogin) { logoLogin.src = ''; logoLogin.classList.add('hidden'); }
         if (iconLogin) iconLogin.classList.remove('hidden');
+        if (textLogin) textLogin.classList.remove('hidden');
+        if (wrapperLogin) {
+          wrapperLogin.className = "w-20 h-20 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-3xl mx-auto border border-emerald-500/20 shadow-lg shadow-emerald-500/10 overflow-hidden";
+        }
       }
     }
 
