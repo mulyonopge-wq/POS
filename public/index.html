@@ -164,6 +164,10 @@
           </div>
           <span class="text-[10px] bg-emerald-700/90 text-emerald-100 px-1.5 py-0.5 rounded font-mono font-bold" title="Shortcut F1: Fokus Kolom Barcode / F2: Modal Bayar">F1</span>
         </button>
+        <button onclick="handleShiftButtonClick()" id="nav-shift" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-400 hover:bg-zinc-800 hover:text-white transition-all duration-200">
+          <i class="fa-solid fa-cash-register text-lg w-5 text-emerald-400"></i>
+          <span>Buka / Tutup Kasir</span>
+        </button>
         <button onclick="switchTab('history')" id="nav-history" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-400 hover:bg-zinc-800 hover:text-white transition-all duration-200">
           <i class="fa-solid fa-clock-rotate-left text-lg w-5 text-amber-400"></i>
           <span>Riwayat Penjualan</span>
@@ -3319,6 +3323,7 @@
         fetchProducts();
         fetchCustomers();
         fetchSuppliers();
+        checkActiveShift();
         updateDashboardReport();
         if (role === 'ADMIN') {
           fetchUsers();
@@ -8233,8 +8238,9 @@
       }
     }
 
-    function handleShiftButtonClick() {
-      if (activeShiftData) {
+    async function handleShiftButtonClick() {
+      const shift = await checkActiveShift();
+      if (shift) {
         openCloseShiftModal();
       } else {
         openOpenShiftModal();
@@ -8248,7 +8254,7 @@
 
     function openOpenShiftModal() {
       const nameInput = document.getElementById('open-shift-cashier-name');
-      if (nameInput) nameInput.value = currentUser?.name || 'Kasir';
+      if (nameInput) nameInput.value = localStorage.getItem('pos_user_name') || currentUser?.name || 'Kasir';
       const initialCashInput = document.getElementById('open-shift-initial-cash');
       if (initialCashInput) initialCashInput.value = 0;
       openModal('modal-open-shift');
