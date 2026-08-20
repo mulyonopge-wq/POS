@@ -1,4 +1,6 @@
-1.3.5
+1.3.6
+- Pengaturan Tema Terang (Light Mode): Warna background menu terpilih (active selected menu) diubah dari biru menjadi Hijau Elegan (Emerald Green)
+- Kompatibilitas Tema Gelap (Dark Mode): Warna sorotan menu terpilih tetap Biru Elegan pada mode gelap
 - Pengaturan Tampilan Tema Terang (Light Mode): Warna background kartu "TOTAL BELANJA" kasir disesuaikan persis dengan warna sidebar (Hijau Emerald Elegan) dengan tulisan teks Putih Terang (Bright White) & kontras tinggi
 - Pengaturan Tampilan Tema Terang (Light Mode): Warna background sidebar otomatis berubah menjadi Hijau Elegan (Emerald Green) saat tema terang dipilih
 - Tampilan Kontras Tinggi untuk teks & ikon navigasi sidebar pada mode terang

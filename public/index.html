@@ -159,7 +159,7 @@
       </div>
       
       <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto scrollbar-thin">
-        <button onclick="switchTab('kasir')" id="nav-kasir" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium transition-all duration-200 bg-blue-600 text-white shadow-lg shadow-blue-950/20">
+        <button onclick="switchTab('kasir')" id="nav-kasir" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium transition-all duration-200 bg-emerald-600 dark:bg-blue-600 text-white shadow-lg shadow-emerald-950/40 dark:shadow-blue-950/20">
           <div class="flex items-center gap-3">
             <i class="fa-solid fa-cart-shopping text-lg w-5 text-emerald-300"></i>
             <span>Penjualan</span>
@@ -4559,7 +4559,7 @@
 
       // Reset semua status aktif tombol navigasi
       document.querySelectorAll('.nav-btn, .nav-btn-admin').forEach(btn => {
-        btn.classList.remove('bg-blue-600', 'bg-emerald-600', 'text-white', 'shadow-lg', 'shadow-blue-950/20', 'shadow-emerald-950/20');
+        btn.classList.remove('bg-emerald-600', 'dark:bg-blue-600', 'bg-blue-600', 'text-white', 'shadow-lg', 'shadow-emerald-950/40', 'dark:shadow-blue-950/20', 'shadow-blue-950/20');
         btn.classList.add('text-emerald-100/80', 'dark:text-slate-400', 'hover:bg-emerald-800/80', 'dark:hover:bg-zinc-800', 'hover:text-white');
       });
 
@@ -4567,17 +4567,18 @@
       const activeBtn = document.getElementById(`nav-${tabName}`);
       if (activeBtn) {
         activeBtn.classList.remove('text-emerald-100/80', 'dark:text-slate-400', 'hover:bg-emerald-800/80', 'dark:hover:bg-zinc-800', 'hover:text-white');
-        activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-lg', 'shadow-blue-950/20');
+        activeBtn.classList.add('bg-emerald-600', 'dark:bg-blue-600', 'text-white', 'shadow-lg', 'shadow-emerald-950/40', 'dark:shadow-blue-950/20');
       }
 
       // Update active state pada Native Mobile Bottom Nav Bar
       document.querySelectorAll('.mobile-bnav-btn').forEach(btn => {
+        btn.classList.remove('text-emerald-600', 'dark:text-blue-400', 'text-blue-600', 'font-bold');
         btn.classList.add('text-slate-400', 'hover:text-slate-600', 'dark:hover:text-slate-200', 'font-medium');
       });
       const activeBnav = document.getElementById(`bnav-${tabName}`);
       if (activeBnav) {
         activeBnav.classList.remove('text-slate-400', 'hover:text-slate-600', 'dark:hover:text-slate-200', 'font-medium');
-        activeBnav.classList.add('text-blue-600', 'dark:text-blue-400', 'font-bold');
+        activeBnav.classList.add('text-emerald-600', 'dark:text-blue-400', 'font-bold');
       }
 
       // Close mobile sidebar if open
@@ -4585,7 +4586,6 @@
       if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
         toggleMobileSidebar();
       }
-
       if (tabName === 'printer') {
         loadPrinterSettingsUI();
       }
