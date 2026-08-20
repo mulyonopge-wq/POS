@@ -1030,13 +1030,22 @@ app.post('/api/sales/checkout', authenticate, (req, res) => {
     return res.status(400).json({ success: false, message: 'Keranjang belanja kosong atau data tidak lengkap' });
   }
 
-  // Dapatkan shift_id kasir aktif jika ada
+  // Dapatkan shift_id kasir aktif
   const activeShift = db.prepare(`
     SELECT id FROM t_cashier_shifts 
     WHERE user_id = ? AND status = 'OPEN' 
     ORDER BY id DESC LIMIT 1
   `).get(req.user.id);
-  const currentShiftId = activeShift ? activeShift.id : null;
+
+  if (!activeShift) {
+    return res.status(400).json({ 
+      success: false, 
+      shift_required: true,
+      message: 'Kasir belum melakukan Buka Kasir. Silakan lakukan Buka Kasir (isi modal awal kasir) terlebih dahulu sebelum memproses transaksi penjualan.' 
+    });
+  }
+
+  const currentShiftId = activeShift.id;
 
   const checkoutTx = db.transaction(() => {
     const invoiceNo = generateInvoiceNumber();

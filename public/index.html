@@ -3554,7 +3554,7 @@
         fetchProducts();
         fetchCustomers();
         fetchSuppliers();
-        checkActiveShift();
+        checkActiveShift(true);
         updateDashboardReport();
         if (role === 'ADMIN') {
           fetchUsers();
@@ -5445,6 +5445,13 @@
     }
 
     function handleMobileQuickPayClick() {
+      if (!activeShiftData) {
+        playBeep('error');
+        alert("Sesi Kasir belum dibuka! Silakan lakukan Buka Kasir (isi modal awal kasir) terlebih dahulu sebelum memproses transaksi penjualan.");
+        openOpenShiftModal();
+        return;
+      }
+
       if (cart.length === 0) {
         alert("Keranjang belanja masih kosong! Silakan pilih atau scan barang terlebih dahulu.");
         return;
@@ -5470,6 +5477,13 @@
     // ==========================================
 
     async function processCheckout() {
+      if (!activeShiftData) {
+        playBeep('error');
+        alert("Sesi Kasir belum dibuka! Silakan lakukan Buka Kasir (isi modal awal kasir) terlebih dahulu sebelum memproses transaksi penjualan.");
+        openOpenShiftModal();
+        return;
+      }
+
       if (cart.length === 0) {
         alert("Keranjang belanja masih kosong!");
         return;
@@ -5567,6 +5581,9 @@
         } else {
           playBeep('error');
           alert("Gagal melakukan checkout: " + json.message);
+          if (json.shift_required) {
+            openOpenShiftModal();
+          }
         }
       } catch (e) {
         playBeep('error');
