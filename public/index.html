@@ -151,8 +151,8 @@
     <div id="sidebar-overlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
 
     <!-- SIDEBAR (DESKTOP & MOBILE) -->
-    <aside id="app-sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-zinc-900 text-white transform -translate-x-full md:translate-x-0 md:static md:flex md:flex-shrink-0 md:flex-col transition-transform duration-200 ease-in-out">
-      <div class="flex items-center gap-3 px-6 h-16 bg-zinc-950 border-b border-zinc-800">
+    <aside id="app-sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-emerald-950 dark:bg-zinc-900 text-white transform -translate-x-full md:translate-x-0 md:static md:flex md:flex-shrink-0 md:flex-col transition-all duration-200 ease-in-out">
+      <div class="flex items-center gap-3 px-6 h-16 bg-emerald-900 dark:bg-zinc-950 border-b border-emerald-800/80 dark:border-zinc-800">
         <img id="app-logo-sidebar" class="h-12 w-auto max-w-[190px] object-contain hidden" alt="Logo Toko" />
         <i id="app-icon-sidebar" class="fa-solid fa-cash-register text-emerald-400 text-2xl"></i>
         <span id="app-title-store-name" class="font-outfit font-bold text-md tracking-wider truncate">KASIRKU</span>
@@ -166,45 +166,45 @@
           </div>
           <span class="text-[10px] bg-emerald-700/90 text-emerald-100 px-1.5 py-0.5 rounded font-mono font-bold" title="Shortcut F1: Fokus Kolom Barcode / F2: Modal Bayar">F1</span>
         </button>
-        <button onclick="handleShiftButtonClick()" id="nav-shift" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-400 hover:bg-zinc-800 hover:text-white transition-all duration-200">
+        <button onclick="handleShiftButtonClick()" id="nav-shift" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-emerald-100/80 dark:text-slate-400 hover:bg-emerald-800/80 dark:hover:bg-zinc-800 hover:text-white transition-all duration-200">
           <i class="fa-solid fa-cash-register text-lg w-5 text-emerald-400"></i>
           <span>Buka / Tutup Kasir</span>
         </button>
-        <button onclick="switchTab('history')" id="nav-history" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-400 hover:bg-zinc-800 hover:text-white transition-all duration-200">
+        <button onclick="switchTab('history')" id="nav-history" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-emerald-100/80 dark:text-slate-400 hover:bg-emerald-800/80 dark:hover:bg-zinc-800 hover:text-white transition-all duration-200">
           <i class="fa-solid fa-clock-rotate-left text-lg w-5 text-amber-400"></i>
           <span>Riwayat Penjualan</span>
         </button>
-        <button onclick="switchTab('stok')" id="nav-stok" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-400 hover:bg-zinc-800 hover:text-white transition-all duration-200">
+        <button onclick="switchTab('stok')" id="nav-stok" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-emerald-100/80 dark:text-slate-400 hover:bg-emerald-800/80 dark:hover:bg-zinc-800 hover:text-white transition-all duration-200">
           <i class="fa-solid fa-boxes-stacked text-lg w-5 text-sky-400"></i>
           <span>Stok Barang</span>
         </button>
-        <button onclick="switchTab('hutang')" id="nav-hutang" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-400 hover:bg-zinc-800 hover:text-white transition-all duration-200">
+        <button onclick="switchTab('hutang')" id="nav-hutang" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-emerald-100/80 dark:text-slate-400 hover:bg-emerald-800/80 dark:hover:bg-zinc-800 hover:text-white transition-all duration-200">
           <i class="fa-solid fa-book-bookmark text-lg w-5 text-rose-400"></i>
           <span>Hutang & Piutang</span>
         </button>
-        <button onclick="switchTab('kontak')" id="nav-kontak" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-400 hover:bg-zinc-800 hover:text-white transition-all duration-200">
+        <button onclick="switchTab('kontak')" id="nav-kontak" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-emerald-100/80 dark:text-slate-400 hover:bg-emerald-800/80 dark:hover:bg-zinc-800 hover:text-white transition-all duration-200">
           <i class="fa-solid fa-address-book text-lg w-5 text-purple-400"></i>
           <span>Kontak & Relasi</span>
         </button>
-        <button onclick="switchTab('printer')" id="nav-printer" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-400 hover:bg-zinc-800 hover:text-white transition-all duration-200">
+        <button onclick="switchTab('printer')" id="nav-printer" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-emerald-100/80 dark:text-slate-400 hover:bg-emerald-800/80 dark:hover:bg-zinc-800 hover:text-white transition-all duration-200">
           <i class="fa-solid fa-print text-lg w-5 text-indigo-400"></i>
           <span>Pengaturan Printer</span>
         </button>
-        <button onclick="switchTab('users')" id="nav-users" class="nav-btn-admin w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-400 hover:bg-zinc-800 hover:text-white transition-all duration-200">
+        <button onclick="switchTab('users')" id="nav-users" class="nav-btn-admin w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-emerald-100/80 dark:text-slate-400 hover:bg-emerald-800/80 dark:hover:bg-zinc-800 hover:text-white transition-all duration-200">
           <i class="fa-solid fa-users text-lg w-5 text-teal-400"></i>
           <span>Manajemen User</span>
         </button>
-        <button onclick="switchTab('laporan')" id="nav-laporan" class="nav-btn-admin w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-400 hover:bg-zinc-800 hover:text-white transition-all duration-200">
+        <button onclick="switchTab('laporan')" id="nav-laporan" class="nav-btn-admin w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-emerald-100/80 dark:text-slate-400 hover:bg-emerald-800/80 dark:hover:bg-zinc-800 hover:text-white transition-all duration-200">
           <i class="fa-solid fa-chart-pie text-lg w-5 text-orange-400"></i>
           <span>Dashboard Laporan</span>
         </button>
-        <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn-admin w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-slate-400 hover:bg-zinc-800 hover:text-white transition-all duration-200">
+        <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn-admin w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-emerald-100/80 dark:text-slate-400 hover:bg-emerald-800/80 dark:hover:bg-zinc-800 hover:text-white transition-all duration-200">
           <i class="fa-solid fa-gears text-lg w-5 text-cyan-400"></i>
           <span>Pengaturan Toko</span>
         </button>
       </nav>
 
-      <div class="p-4 border-t border-zinc-800 bg-zinc-950/50 space-y-3">
+      <div class="p-4 border-t border-emerald-800/80 dark:border-zinc-800 bg-emerald-950/80 dark:bg-zinc-950/50 space-y-3">
         <div class="flex items-center gap-2 text-xs">
           <div class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold" id="user-avatar">
             U
@@ -4552,7 +4552,6 @@
       }
     }
 
-
     function switchTab(tabName) {
       activeTab = tabName;
       document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
@@ -4561,19 +4560,18 @@
       // Reset semua status aktif tombol navigasi
       document.querySelectorAll('.nav-btn, .nav-btn-admin').forEach(btn => {
         btn.classList.remove('bg-blue-600', 'bg-emerald-600', 'text-white', 'shadow-lg', 'shadow-blue-950/20', 'shadow-emerald-950/20');
-        btn.classList.add('text-slate-400', 'hover:bg-zinc-800', 'hover:text-white');
+        btn.classList.add('text-emerald-100/80', 'dark:text-slate-400', 'hover:bg-emerald-800/80', 'dark:hover:bg-zinc-800', 'hover:text-white');
       });
 
       // Set tombol aktif baru
       const activeBtn = document.getElementById(`nav-${tabName}`);
       if (activeBtn) {
-        activeBtn.classList.remove('text-slate-400', 'hover:bg-zinc-800', 'hover:text-white');
+        activeBtn.classList.remove('text-emerald-100/80', 'dark:text-slate-400', 'hover:bg-emerald-800/80', 'dark:hover:bg-zinc-800', 'hover:text-white');
         activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-lg', 'shadow-blue-950/20');
       }
 
       // Update active state pada Native Mobile Bottom Nav Bar
       document.querySelectorAll('.mobile-bnav-btn').forEach(btn => {
-        btn.classList.remove('text-blue-600', 'dark:text-blue-400', 'text-emerald-600', 'dark:text-emerald-400', 'font-bold');
         btn.classList.add('text-slate-400', 'hover:text-slate-600', 'dark:hover:text-slate-200', 'font-medium');
       });
       const activeBnav = document.getElementById(`bnav-${tabName}`);
