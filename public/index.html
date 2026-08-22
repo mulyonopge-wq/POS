@@ -7490,6 +7490,20 @@
     // USER MANAGEMENT CRUD ACTIONS
     // ==========================================
 
+    async function fetchUsers() {
+      try {
+        const res = await fetchAPI('/api/users');
+        if (!res.ok) return;
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) {
+          loadedUsers = json.data;
+          renderUsersTable();
+        }
+      } catch (err) {
+        console.error("Gagal mengambil data user:", err);
+      }
+    }
+
     function openAddUserModal() {
       document.getElementById('user-form-id').value = '';
       document.getElementById('user-form-name').value = '';

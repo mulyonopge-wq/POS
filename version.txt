@@ -1,4 +1,5 @@
-1.3.7
+1.3.8
+- Fix Bug Manajemen User: Menambahkan fungsi fetchUsers() yang hilang untuk menangani pendaftaran, pengubahan, & penghapusan user/kasir
 - Keamanan & Tampilan Login: Menghapus tombol Akses Cepat Akun Demo (Admin & Kasir) di halaman login
 - Pengaturan Tema Terang (Light Mode): Warna background menu terpilih (active selected menu) diubah dari biru menjadi Hijau Elegan (Emerald Green)
 - Kompatibilitas Tema Gelap (Dark Mode): Warna sorotan menu terpilih tetap Biru Elegan pada mode gelap
