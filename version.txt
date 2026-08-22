@@ -1,4 +1,5 @@
-1.3.6
+1.3.7
+- Keamanan & Tampilan Login: Menghapus tombol Akses Cepat Akun Demo (Admin & Kasir) di halaman login
 - Pengaturan Tema Terang (Light Mode): Warna background menu terpilih (active selected menu) diubah dari biru menjadi Hijau Elegan (Emerald Green)
 - Kompatibilitas Tema Gelap (Dark Mode): Warna sorotan menu terpilih tetap Biru Elegan pada mode gelap
 - Pengaturan Tampilan Tema Terang (Light Mode): Warna background kartu "TOTAL BELANJA" kasir disesuaikan persis dengan warna sidebar (Hijau Emerald Elegan) dengan tulisan teks Putih Terang (Bright White) & kontras tinggi
